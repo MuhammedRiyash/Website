@@ -1,0 +1,186 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Button from '../components/Button.astro';
+import SectionHead from '../components/SectionHead.astro';
+import CaseStack from '../components/CaseStack.astro';
+import TechFilter from '../components/TechFilter.astro';
+import DevicePair from '../components/DevicePair.astro';
+import ContactSection from '../components/ContactSection.astro';
+import Icon from '../components/Icon.astro';
+import { caseStudies, shortEntries } from '../data/work';
+import { clients } from '../data/site';
+import { absolute, href } from '../lib/url';
+
+const crumbs = [{ name: 'Work', path: 'work' }];
+const total = caseStudies.length + shortEntries.length;
+const schema = [
+  {
+    '@type': 'CollectionPage',
+    name: 'Work — case studies',
+    hasPart: caseStudies.map((c) => ({
+      '@type': 'CreativeWork',
+      name: `${c.client} — ${c.descriptor}`,
+      url: absolute(`work/${c.slug}`),
+    })),
+  },
+];
+---
+
+<Base
+  title="Work — Case Studies in Commerce, Laravel, WooCommerce & Shopify"
+  description="Case studies with real numbers: a headless Astro storefront, a multi-store Laravel platform, WooCommerce plugins and speed work, plus a live home-healthcare platform, Shopify CRO and more."
+  path="work"
+  breadcrumbs={crumbs}
+  schema={schema}
+>
+  <PageHero
+    label="Work"
+    aside="case studies"
+    title="Shipped work, with the numbers that came out of it"
+    lead="From WordPress and Shopify sites to headless storefronts, Laravel commerce platforms, Next.js products and AI tools — the stack has grown with every build."
+    crumbs={crumbs}
+  >
+    <Fragment slot="actions">
+      <Button href={href('contact')} size="lg">Start a project</Button>
+    </Fragment>
+  </PageHero>
+
+  <section class="section" aria-labelledby="cases-title" data-filter-root>
+    <div class="wrap">
+      <h2 id="cases-title" class="sr-only">Case studies</h2>
+      <TechFilter total={total} noun="projects" available={[...caseStudies, ...shortEntries].flatMap((i) => i.filters)} />
+      <CaseStack items={caseStudies} filter={false} headingLevel="h3" />
+
+      <div class="more">
+        <SectionHead
+          label="More projects"
+          aside="sites, plugins and products"
+          title="Smaller builds and earlier work"
+          intro="Shorter entries — the work was real, the write-ups are brief."
+        />
+        <ul class="se" role="list">
+          {
+            shortEntries.map((e) => (
+              <li class="se__item" data-filter-item data-tech={e.filters.join('|')} data-reveal>
+                <article class="se__card">
+                  <DevicePair visual={e.visual} sizes="(min-width: 1024px) 40vw, 100vw" />
+                  <div class="se__body">
+                    <p class="se__meta">
+                      <span class="chip chip--tint">{e.label}</span>
+                      <span class="chip">{e.year}</span>
+                    </p>
+                    <h3 class="t-h3">{e.name}</h3>
+                    <p class="muted">{e.what}</p>
+                    <ul class="se__stack" aria-label="Stack">
+                      {e.stack.map((s) => (
+                        <li class="chip">{s}</li>
+                      ))}
+                    </ul>
+                    {e.href && (
+                      <a href={e.href} class="arrow-link" target="_blank" rel="noopener noreferrer">
+                        Visit {e.domain}
+                        <Icon name="arrow-up-right" />
+                        <span class="sr-only">(opens in a new tab)</span>
+                      </a>
+                    )}
+                  </div>
+                </article>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section band" aria-labelledby="clients-title">
+    <div class="wrap">
+      <SectionHead
+        id="clients-title"
+        label="Clients"
+        aside="2023 – present"
+        title="Businesses I’ve built for"
+        intro="Next.js and Astro builds in 2026, and before that 12+ WordPress and Shopify sites for SMEs and startups that lifted organic traffic by 25% on average."
+      />
+      <ul class="cl" role="list">
+        {clients.map((c) => <li>{c}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <ContactSection source="work" title="Want results like these on your site?" />
+</Base>
+
+<style>
+  .more {
+    margin-top: clamp(72px, 9vw, 128px);
+  }
+  .se {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+  }
+  @media (min-width: 768px) {
+    .se {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .se__item:first-child,
+    .se__item:last-child:nth-child(even) {
+      grid-column: 1 / -1;
+    }
+  }
+  .se__card {
+    height: 100%;
+    display: grid;
+    gap: 1.5rem;
+    padding: clamp(20px, 3vw, 32px);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    background: var(--color-surface);
+  }
+  @media (min-width: 1024px) {
+    .se__item:first-child .se__card {
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      align-items: center;
+      gap: 3rem;
+    }
+  }
+  .se__body {
+    display: grid;
+    align-content: start;
+    justify-items: start;
+    gap: 0.875rem;
+  }
+  .se__meta {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .se__stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .cl {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .cl li {
+    padding: 0.625rem 1.125rem;
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+    background: var(--color-paper);
+    font-size: 1.0625rem;
+    font-weight: 540;
+    letter-spacing: -0.02em;
+  }
+</style>

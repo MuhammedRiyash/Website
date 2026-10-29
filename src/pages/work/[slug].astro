@@ -1,0 +1,432 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Button from '../../components/Button.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
+import DevicePair from '../../components/DevicePair.astro';
+import RelatedWork from '../../components/RelatedWork.astro';
+import ContactSection from '../../components/ContactSection.astro';
+import Icon from '../../components/Icon.astro';
+import { caseStudies, type CaseStudy } from '../../data/work';
+import { services } from '../../data/services';
+import { absolute, href } from '../../lib/url';
+
+export const getStaticPaths = (() => caseStudies.map((item) => ({ params: { slug: item.slug }, props: { item } }))) satisfies GetStaticPaths;
+
+interface Props {
+  item: CaseStudy;
+}
+const { item } = Astro.props;
+const path = `work/${item.slug}`;
+const crumbs = [
+  { name: 'Work', path: 'work' },
+  { name: item.client, path },
+];
+
+const related = caseStudies
+  .filter((c) => c.slug !== item.slug)
+  .map((c) => ({ c, score: c.filters.filter((f) => item.filters.includes(f)).length }))
+  .sort((a, b) => b.score - a.score)
+  .slice(0, 3)
+  .map(({ c }) => c);
+const usedIn = services.filter((s) => s.related.includes(item.slug));
+
+const schema = [
+  {
+    '@type': 'CreativeWork',
+    name: `${item.client} — ${item.descriptor}`,
+    description: item.summary,
+    url: absolute(path),
+    creator: { '@id': `${absolute('')}#person` },
+    keywords: item.stack.join(', '),
+  },
+];
+---
+
+<Base
+  title={`${item.client} — Case Study`}
+  description={item.summary}
+  path={path}
+  ogType="article"
+  breadcrumbs={crumbs}
+  schema={schema}
+>
+  <PageHero
+    label="Case study"
+    aside={item.label}
+    title={`${item.client},`}
+    titleMuted={item.descriptor}
+    lead={item.summary}
+    crumbs={crumbs}
+  />
+
+  <section class="cs-top">
+    <div class="wrap">
+      <dl class="meta" data-reveal>
+        <div>
+          <dt>Focus</dt>
+          <dd>{item.label}</dd>
+        </div>
+        <div>
+          <dt>When</dt>
+          <dd>{item.period}</dd>
+        </div>
+        <div class="meta__wide">
+          <dt>My role</dt>
+          <dd>{item.role}</dd>
+        </div>
+      </dl>
+      <div class="cs-visual" data-reveal>
+        <DevicePair visual={item.visuals[0]} caption eager sizes="(min-width: 1140px) 1100px, 100vw" />
+      </div>
+      <ul class="outcomes" role="list" aria-label="Key numbers">
+        {
+          item.metrics.map((m, i) => (
+            <li data-reveal style={`--d:${i}`}>
+              <strong>{m.value}</strong>
+              <span>{m.label}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <article class="section cs-body">
+    <div class="wrap">
+      <section class="row" aria-labelledby="ctx-title">
+        <div class="row__label"><Eyebrow label="Context" aside="about the project" /></div>
+        <div class="row__content prose" data-reveal>
+          <h2 id="ctx-title" class="t-h3">Where it started</h2>
+          {item.background.map((p) => <p>{p}</p>)}
+        </div>
+      </section>
+
+      <section class="row" aria-labelledby="ch-title">
+        <div class="row__label"><Eyebrow label="Challenge" aside="what had to be solved" /></div>
+        <div class="row__content" data-reveal>
+          <h2 id="ch-title" class="t-h3">The challenge</h2>
+          <ol class="nums" role="list">
+            {
+              item.challenges.map((c, i) => (
+                <li>
+                  <span class="mono">{String(i + 1).padStart(2, '0')}</span>
+                  <div>
+                    <h3>{c.title}</h3>
+                    <p>{c.body}</p>
+                  </div>
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+      </section>
+
+      <section class="row" aria-labelledby="ap-title">
+        <div class="row__label"><Eyebrow label="Approach" aside="how it was built" /></div>
+        <div class="row__content" data-reveal>
+          <h2 id="ap-title" class="t-h3">The approach</h2>
+          <ol class="steps" role="list">
+            {
+              item.approach.map((a, i) => (
+                <li>
+                  <span class="mono steps__num">{`{ ${String(i + 1).padStart(2, '0')} }`}</span>
+                  <h3>{a.title}</h3>
+                  <p>{a.body}</p>
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+      </section>
+
+      {
+        item.visuals.length > 1 && (
+          <section class="row" aria-labelledby="more-title">
+            <div class="row__label">
+              <Eyebrow label="More screens" aside="desktop + mobile" />
+            </div>
+            <div class="row__content row__content--wide" data-reveal>
+              <h2 id="more-title" class="t-h3">More screens</h2>
+              {item.visuals.slice(1).map((v) => (
+                <DevicePair visual={v} caption sizes="(min-width: 1024px) 760px, 100vw" />
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      <section class="row" aria-labelledby="st-title">
+        <div class="row__label"><Eyebrow label="Stack" aside="built with" /></div>
+        <div class="row__content" data-reveal>
+          <h2 id="st-title" class="t-h3">Stack</h2>
+          <ul class="stack" role="list">
+            {item.stack.map((s) => <li class="chip">{s}</li>)}
+          </ul>
+        </div>
+      </section>
+
+      <section class="row" aria-labelledby="out-title">
+        <div class="row__label"><Eyebrow label="Outcome" aside="where it landed" /></div>
+        <div class="row__content" data-reveal>
+          <h2 id="out-title" class="t-h3">The outcome</h2>
+          <ul class="checks" role="list">
+            {
+              item.outcome.map((o) => (
+                <li>
+                  <Icon name="check" size={18} />
+                  <span>{o}</span>
+                </li>
+              ))
+            }
+          </ul>
+          {item.note && <p class="note">{item.note}</p>}
+          <div class="links">
+            {
+              item.links.map((l) => (
+                <Button href={l.href} variant="secondary" icon={l.kind === 'live' ? 'external' : 'github'} external>
+                  {l.label}
+                </Button>
+              ))
+            }
+            <Button href="#contact">Start a similar project</Button>
+          </div>
+          {
+            usedIn.length > 0 && (
+              <p class="services-used">
+                Related services:{' '}
+                {usedIn.map((s, i) => (
+                  <>
+                    {i > 0 && ', '}
+                    <a class="link" href={href(`services/${s.slug}`)}>
+                      {s.name}
+                    </a>
+                  </>
+                ))}
+              </p>
+            )
+          }
+        </div>
+      </section>
+    </div>
+  </article>
+
+  <section class="section band" aria-labelledby="related-title">
+    <div class="wrap">
+      <div class="related-head">
+        <div>
+          <Eyebrow label="More work" aside="related" />
+          <h2 id="related-title" class="t-h2">Related case studies</h2>
+        </div>
+        <a href={href('work')} class="arrow-link">All work <Icon name="arrow-up-right" /></a>
+      </div>
+      <RelatedWork items={related} />
+    </div>
+  </section>
+
+  <ContactSection source={path} title="Like what you see? Let’s talk about yours." />
+</Base>
+
+<style>
+  .cs-top {
+    padding-top: clamp(40px, 5vw, 64px);
+  }
+  .meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem 2rem;
+    margin: 0 0 clamp(32px, 4vw, 48px);
+  }
+  @media (min-width: 900px) {
+    .meta {
+      grid-template-columns: 1fr 1fr 2fr;
+    }
+  }
+  .meta__wide {
+    grid-column: 1 / -1;
+  }
+  @media (min-width: 900px) {
+    .meta__wide {
+      grid-column: auto;
+    }
+  }
+  .meta dt {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    margin-bottom: 0.375rem;
+  }
+  .meta dd {
+    margin: 0;
+    font-weight: 500;
+  }
+  .cs-visual {
+    max-width: 1100px;
+    margin-inline: auto;
+  }
+  .outcomes {
+    list-style: none;
+    margin: clamp(32px, 4vw, 56px) 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+    border-top: 1px solid var(--color-line);
+  }
+  .outcomes li {
+    display: grid;
+    gap: 0.375rem;
+    padding: 1.5rem 1.5rem 1.5rem 0;
+  }
+  .outcomes strong {
+    font-size: clamp(2rem, 1.5rem + 2vw, 3.25rem);
+    font-weight: 560;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    color: var(--color-accent-hover);
+  }
+  .outcomes span {
+    color: var(--color-muted);
+  }
+  .row {
+    display: grid;
+    gap: 1.25rem;
+    padding-block: clamp(32px, 4vw, 56px);
+    border-top: 1px solid var(--color-line);
+  }
+  .row:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+  @media (min-width: 1024px) {
+    .row {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 2.2fr);
+      gap: 4rem;
+    }
+  }
+  .row__content {
+    display: grid;
+    gap: 1.25rem;
+    max-width: 76ch;
+  }
+  .row__content--wide {
+    max-width: none;
+  }
+  .prose p {
+    color: var(--color-ink-soft);
+    font-size: 1.0625rem;
+  }
+  .nums {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0;
+  }
+  .nums li {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: 0.75rem;
+    padding: 1.25rem 0;
+    border-top: 1px solid var(--color-line);
+  }
+  .nums .mono {
+    font-size: 0.8125rem;
+    color: var(--color-accent-hover);
+    padding-top: 0.2rem;
+  }
+  .nums h3,
+  .steps h3 {
+    font-size: 1.125rem;
+    letter-spacing: -0.015em;
+    line-height: 1.35;
+    margin-bottom: 0.25rem;
+  }
+  .nums p,
+  .steps p {
+    color: var(--color-ink-soft);
+  }
+  .steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+  }
+  @media (min-width: 768px) {
+    .steps {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  .steps li {
+    padding: 1.5rem;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    background: var(--color-surface);
+  }
+  .steps__num {
+    display: block;
+    font-size: 0.8125rem;
+    color: var(--color-accent-hover);
+    margin-bottom: 0.75rem;
+  }
+  .stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .stack .chip {
+    min-height: 36px;
+    font-size: 0.8125rem;
+  }
+  .checks {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.75rem;
+  }
+  .checks li {
+    display: flex;
+    gap: 0.75rem;
+    font-size: 1.0625rem;
+  }
+  .checks :global(svg) {
+    flex: none;
+    margin-top: 0.25rem;
+    color: var(--color-accent);
+  }
+  .note {
+    padding: 1rem 1.25rem;
+    border-left: 2px solid var(--color-accent);
+    background: var(--color-accent-tint);
+    border-radius: 0 10px 10px 0;
+    font-size: 0.9375rem;
+    color: var(--color-ink-soft);
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .services-used {
+    font-size: 0.9375rem;
+    color: var(--color-muted);
+  }
+  .related-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: clamp(32px, 4vw, 48px);
+  }
+  .related-head h2 {
+    margin-top: 1.25rem;
+  }
+</style>

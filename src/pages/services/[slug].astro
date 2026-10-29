@@ -1,0 +1,345 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Button from '../../components/Button.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import DevicePair from '../../components/DevicePair.astro';
+import ProcessSteps from '../../components/ProcessSteps.astro';
+import RelatedWork from '../../components/RelatedWork.astro';
+import Faq from '../../components/Faq.astro';
+import ContactSection from '../../components/ContactSection.astro';
+import Icon from '../../components/Icon.astro';
+import { services, serviceVisual, type Service } from '../../data/services';
+import { caseStudies } from '../../data/work';
+import { absolute, href } from '../../lib/url';
+
+export const getStaticPaths = (() => services.map((service) => ({ params: { slug: service.slug }, props: { service } }))) satisfies GetStaticPaths;
+
+interface Props {
+  service: Service;
+}
+const { service } = Astro.props;
+const path = `services/${service.slug}`;
+const crumbs = [
+  { name: 'Services', path: 'services' },
+  { name: service.name, path },
+];
+const visual = serviceVisual[service.slug];
+const related = service.related
+  .map((slug) => caseStudies.find((c) => c.slug === slug))
+  .filter((c): c is (typeof caseStudies)[number] => Boolean(c));
+const others = services.filter((s) => s.slug !== service.slug);
+
+const schema = [
+  {
+    '@type': 'Service',
+    name: service.name,
+    description: service.metaDescription,
+    serviceType: service.name,
+    url: absolute(path),
+    provider: { '@id': `${absolute('')}#service` },
+    areaServed: [
+      { '@type': 'Country', name: 'India' },
+      { '@type': 'Place', name: 'Remote — worldwide' },
+    ],
+  },
+  {
+    '@type': 'FAQPage',
+    mainEntity: service.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+  },
+];
+---
+
+<Base title={service.metaTitle} description={service.metaDescription} path={path} breadcrumbs={crumbs} schema={schema}>
+  <PageHero label="Service" aside={service.name} title={service.headline} lead={service.intro} crumbs={crumbs}>
+    <Fragment slot="actions">
+      <Button href="#contact" size="lg">Start a project</Button>
+      {related.length > 0 && <Button href="#related" variant="secondary" size="lg" icon="arrow-right">Related work</Button>}
+    </Fragment>
+    <div slot="aside" class="sd-aside">
+      <DevicePair visual={visual} caption eager sizes="(min-width: 1024px) 560px, 100vw" />
+      <ul class="sd-tags" aria-label="Focus areas">
+        {service.tags.map((t) => <li class="chip">{t}</li>)}
+      </ul>
+      {
+        service.proof.map((p) => (
+          <p class="sd-proof">
+            <Icon name="check" size={16} />
+            <span>{p}</span>
+          </p>
+        ))
+      }
+    </div>
+  </PageHero>
+
+  <!-- Problem -->
+  <section class="section" aria-labelledby="problem-title">
+    <div class="wrap">
+      <SectionHead
+        id="problem-title"
+        label="The problem"
+        aside="where these projects go wrong"
+        title="Three ways this usually goes wrong — and what I do instead"
+      />
+      <ol class="pr" role="list">
+        {
+          service.problems.map((p, i) => (
+            <li class="pr__item" data-reveal style={`--d:${i}`}>
+              <span class="mono pr__num">{`{ ${String(i + 1).padStart(2, '0')} }`}</span>
+              <h3 class="t-h3">{p.title}</h3>
+              <p class="pr__fix">
+                <span class="mono">Fix</span>
+                {p.fix}
+              </p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- Deliverables -->
+  <section class="section band" aria-labelledby="get-title">
+    <div class="wrap">
+      <SectionHead id="get-title" label="What you get" aside="deliverables" title="What’s included" />
+      <ul class="dl" role="list">
+        {
+          service.deliverables.map((d, i) => (
+            <li data-reveal style={`--d:${i % 3}`}>
+              <span class="mono dl__num">{String(i + 1).padStart(2, '0')}</span>
+              <h3>{d.title}</h3>
+              <p class="muted">{d.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="stk" data-reveal>
+        <h3 class="eyebrow">Stack <span class="aside">/ tools I use for this</span></h3>
+        <ul class="stk__list" role="list">
+          {service.stack.map((s) => <li class="chip">{s}</li>)}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Process -->
+  <section class="section" aria-labelledby="process-title">
+    <div class="wrap">
+      <SectionHead id="process-title" label="Process" aside="for this service" title="How a project like this runs" />
+      <ProcessSteps details={service.process} />
+    </div>
+  </section>
+
+  {
+    related.length > 0 && (
+      <section class="section band" id="related" aria-labelledby="related-title">
+        <div class="wrap">
+          <SectionHead id="related-title" label="Related work" aside="shipped" title="Where I’ve done this before">
+            <a href={href('work')} class="arrow-link">
+              All work <Icon name="arrow-up-right" />
+            </a>
+          </SectionHead>
+          <RelatedWork items={related} />
+        </div>
+      </section>
+    )
+  }
+
+  <!-- FAQ -->
+  <section class="section" aria-labelledby="faq-title">
+    <div class="wrap sd-faq">
+      <div data-reveal>
+        <SectionHead id="faq-title" label="FAQ" aside={service.name} title="Common questions" align="stack" />
+      </div>
+      <div data-reveal>
+        <Faq items={service.faq} />
+      </div>
+    </div>
+  </section>
+
+  <ContactSection
+    source={path}
+    preselect={service.name}
+    title={`Need help with ${service.name.toLowerCase()}?`}
+  />
+
+  <section class="others" aria-labelledby="others-title">
+    <div class="wrap">
+      <h2 id="others-title" class="eyebrow">Other services</h2>
+      <ul role="list">
+        {
+          others.map((s) => (
+            <li>
+              <a href={href(`services/${s.slug}`)}>
+                {s.name}
+                <Icon name="arrow-up-right" size={16} />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .sd-aside {
+    display: grid;
+    gap: 1rem;
+  }
+  .sd-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 0;
+  }
+  .sd-proof {
+    display: flex;
+    gap: 0.625rem;
+    font-size: 0.9375rem;
+  }
+  .sd-proof :global(svg) {
+    flex: none;
+    margin-top: 0.25rem;
+    color: var(--color-accent);
+  }
+  .pr {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+  }
+  @media (min-width: 900px) {
+    .pr {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .pr__item {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: clamp(24px, 3vw, 36px);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    background: var(--color-surface);
+  }
+  .pr__num {
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+  }
+  .pr__fix {
+    display: grid;
+    gap: 0.375rem;
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-line);
+    color: var(--color-ink-soft);
+  }
+  .pr__fix .mono {
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-accent-hover);
+  }
+  .dl {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1px;
+    background: var(--color-line);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+  }
+  @media (min-width: 640px) {
+    .dl {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1024px) {
+    .dl {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .dl li {
+    display: grid;
+    align-content: start;
+    gap: 0.625rem;
+    padding: clamp(24px, 2.4vw, 32px);
+    background: var(--color-paper);
+  }
+  .dl h3 {
+    font-size: 1.1875rem;
+    letter-spacing: -0.02em;
+  }
+  .dl__num {
+    font-size: 0.8125rem;
+    color: var(--color-accent-hover);
+  }
+  .stk {
+    display: grid;
+    gap: 1rem;
+    margin-top: clamp(32px, 4vw, 48px);
+  }
+  .stk h3 {
+    font-weight: 400;
+  }
+  .stk__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .stk__list .chip {
+    min-height: 36px;
+    font-size: 0.8125rem;
+  }
+  .sd-faq {
+    display: grid;
+    gap: 1rem;
+  }
+  @media (min-width: 1024px) {
+    .sd-faq {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+      gap: 4rem;
+    }
+  }
+  .others {
+    padding-bottom: var(--section-y);
+  }
+  .others .wrap {
+    display: grid;
+    gap: 1.25rem;
+  }
+  .others ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .others a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    padding: 0 1rem;
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+    background: var(--color-surface);
+    text-decoration: none;
+    font-size: 0.9375rem;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+  .others a:hover {
+    border-color: var(--color-ink);
+  }
+</style>

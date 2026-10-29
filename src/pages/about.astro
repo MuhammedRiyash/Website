@@ -1,0 +1,378 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Button from '../components/Button.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import StackEvolution from '../components/StackEvolution.astro';
+import portrait from '../assets/portrait.jpg';
+import { person, experience, skills, education, certifications } from '../data/site';
+import { asset, href } from '../lib/url';
+
+const crumbs = [{ name: 'About', path: 'about' }];
+---
+
+<Base
+  title="About — Senior Full-Stack Developer in Bengaluru"
+  description="Muhammed Riyash J is a senior full-stack developer in Bengaluru: headless storefronts, Laravel commerce back ends and WooCommerce stores, with 20+ sites shipped to production."
+  path="about"
+  ogType="profile"
+  breadcrumbs={crumbs}
+>
+  <PageHero
+    label="About"
+    aside={`${person.title} · ${person.location}`}
+    title="I build commerce sites that keep working after launch day."
+    lead="Senior full-stack developer with 3+ years building headless storefronts, Laravel commerce back ends and WooCommerce stores, with 20+ sites shipped to production. I work across Astro, React, Next.js, TypeScript and PHP/Laravel, test builds end-to-end against the live store, and recently built an AI content SaaS on the Claude and GPT APIs."
+    crumbs={crumbs}
+  >
+    <Fragment slot="actions">
+      <Button href={href('contact')} size="lg">Start a project</Button>
+      <Button href={asset(person.resume)} variant="secondary" size="lg" icon="download" download>Download CV</Button>
+    </Fragment>
+    <figure slot="aside" class="portrait">
+      <Image
+        src={portrait}
+        alt="Muhammed Riyash J, smiling, in a navy blazer and white shirt against a grey background"
+        widths={[360, 560, 800]}
+        sizes="(min-width: 1024px) 460px, 90vw"
+        loading="eager"
+        fetchpriority="high"
+      />
+      <figcaption>
+        <span class="mono">{person.name}</span>
+        <span>{person.title} · {person.location}</span>
+      </figcaption>
+    </figure>
+  </PageHero>
+
+  <section class="section" aria-labelledby="story-title">
+    <div class="wrap story">
+      <div data-reveal>
+        <Eyebrow label="The short story" />
+        <h2 id="story-title" class="t-h2 mt-5">From intern to top contributor on a production storefront</h2>
+      </div>
+      <div class="story__text" data-reveal>
+        <p>
+          I’m a {person.title.toLowerCase()} in Bengaluru building headless commerce — including the Astro/Preact Young Onion storefront,
+          where I’m the top contributor with 79 of 168 merged pull requests, and ZetStore, the multi-store Laravel 13 platform behind GD
+          Farm Fresh and Young Onion.
+        </p>
+        <p>
+          I started in 2023 building Taskify with React and Laravel as a full-stack intern at Besant Technologies. Then came 12+ WordPress
+          and Shopify sites for SMEs and startups — they lifted organic traffic by 25% on average, and my Shopify optimisation work raised
+          conversion by about 10% and average order value by 12%.
+        </p>
+        <p>
+          In 2026 the stack moved further: 360 Home Healthcare, a live Next.js home-healthcare platform with encrypted patient data;
+          Fiomis, a headless clothing store on Astro and Medusa v2; Inventra, a procure-to-bill inventory app; and an AI
+          content-repurposing SaaS on the Claude and GPT APIs (unreleased).
+        </p>
+        <p>
+          I test against the live store with Playwright, care about Core Web Vitals and accessibility, and am studying for an MCA at SRM
+          University, Sikkim (expected 2027).
+        </p>
+        <dl class="facts">
+          <div><dt>Based in</dt><dd>{person.location}</dd></div>
+          <div><dt>Works</dt><dd>Remotely — anywhere in India or abroad</dd></div>
+          <div>
+            <dt>Languages</dt>
+            <dd>{person.languages.map((l) => `${l.name} (${l.level.toLowerCase()})`).join(', ')}</dd>
+          </div>
+          <div><dt>Projects</dt><dd>A limited number at a time, for founders and growing businesses</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="section band" aria-labelledby="exp-title">
+    <div class="wrap">
+      <SectionHead id="exp-title" label="Experience" aside="3+ years" title="Where I’ve worked" />
+      <ol class="tl" role="list">
+        {
+          experience.map((job) => (
+            <li class="tl__item" data-reveal>
+              <div class="tl__when">
+                <span class="mono">{job.period}</span>
+                <span class="muted">{job.place}</span>
+              </div>
+              <div class="tl__what">
+                <h3 class="t-h3">{job.role}</h3>
+                <p class="tl__company">{job.company}</p>
+                <ul>
+                  {job.points.map((p) => (
+                    <li>{p}</li>
+                  ))}
+                </ul>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="skills-title">
+    <div class="wrap">
+      <SectionHead id="skills-title" label="Skills" aside="day to day" title="What I work with" />
+      <div class="skills">
+        {
+          skills.map((g, i) => (
+            <div class="skills__group" data-reveal style={`--d:${i % 3}`}>
+              <h3 class="mono">{g.group}</h3>
+              <ul role="list">
+                {g.items.map((s) => (
+                  <li class="chip">{s}</li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <StackEvolution />
+
+  <section class="section" aria-labelledby="edu-title">
+    <div class="wrap edu">
+      <div data-reveal>
+        <Eyebrow label="Education" />
+        <h2 id="edu-title" class="t-h3 mt-5">Education</h2>
+        <ul class="edu__list" role="list">
+          {
+            education.map((e) => (
+              <li>
+                <strong>{e.degree}</strong>
+                <span>{e.school}</span>
+                <span class="mono">{e.period}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div data-reveal>
+        <Eyebrow label="Certifications" />
+        <h2 class="t-h3 mt-5">Certifications</h2>
+        <ul class="edu__list" role="list">
+          {
+            certifications.map((c) => (
+              <li>
+                <strong>{c.name}</strong>
+                <span>{c.issuer}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div data-reveal>
+        <Eyebrow label="Languages" />
+        <h2 class="t-h3 mt-5">Languages</h2>
+        <ul class="edu__list" role="list">
+          {
+            person.languages.map((l) => (
+              <li>
+                <strong>{l.name}</strong>
+                <span>{l.level}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .portrait {
+    margin: 0;
+    max-width: 460px;
+    justify-self: end;
+    width: 100%;
+  }
+  .portrait :global(img) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 998 / 1024;
+    object-fit: cover;
+    border-radius: var(--radius-card);
+    border: 1px solid var(--color-line);
+  }
+  .portrait figcaption {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+    margin-top: 0.875rem;
+    font-size: 0.875rem;
+    color: var(--color-muted);
+  }
+  .portrait figcaption .mono {
+    color: var(--color-ink);
+  }
+  .story {
+    display: grid;
+    gap: 2.5rem;
+  }
+  @media (min-width: 1024px) {
+    .story {
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: 4rem;
+    }
+  }
+  .story__text {
+    display: grid;
+    gap: 1.25rem;
+    font-size: 1.0625rem;
+    color: var(--color-ink-soft);
+  }
+  .facts {
+    display: grid;
+    gap: 0;
+    margin: 1rem 0 0;
+    border-top: 1px solid var(--color-line);
+  }
+  .facts div {
+    display: grid;
+    gap: 0.25rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--color-line);
+  }
+  @media (min-width: 640px) {
+    .facts div {
+      grid-template-columns: 10rem 1fr;
+      gap: 1rem;
+    }
+  }
+  .facts dt {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    padding-top: 0.2rem;
+  }
+  .facts dd {
+    margin: 0;
+    color: var(--color-ink);
+  }
+  .tl {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--color-line);
+  }
+  .tl__item {
+    display: grid;
+    gap: 1rem 3rem;
+    padding: clamp(28px, 4vw, 48px) 0;
+    border-bottom: 1px solid var(--color-line);
+  }
+  @media (min-width: 1024px) {
+    .tl__item {
+      grid-template-columns: minmax(0, 0.6fr) minmax(0, 2fr);
+    }
+  }
+  .tl__when {
+    display: grid;
+    align-content: start;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+  }
+  .tl__when .mono {
+    color: var(--color-accent-hover);
+  }
+  .tl__company {
+    margin-top: 0.375rem;
+    font-weight: 500;
+    color: var(--color-muted);
+  }
+  .tl__what ul {
+    margin: 1.25rem 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.75rem;
+    color: var(--color-ink-soft);
+  }
+  .tl__what ul li {
+    position: relative;
+    padding-left: 1.25rem;
+    max-width: 80ch;
+  }
+  .tl__what ul li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.7em;
+    width: 6px;
+    height: 6px;
+    border-radius: 2px;
+    background: var(--color-accent);
+  }
+  .skills {
+    display: grid;
+    gap: 1rem;
+  }
+  @media (min-width: 768px) {
+    .skills {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1200px) {
+    .skills {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .skills__group {
+    padding: clamp(20px, 2.4vw, 28px);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    background: var(--color-surface);
+  }
+  .skills__group h3 {
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    margin-bottom: 1rem;
+  }
+  .skills__group ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .edu {
+    display: grid;
+    gap: 2.5rem;
+  }
+  @media (min-width: 900px) {
+    .edu {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .edu__list {
+    list-style: none;
+    margin: 1.5rem 0 0;
+    padding: 0;
+    border-top: 1px solid var(--color-line);
+  }
+  .edu__list li {
+    display: grid;
+    gap: 0.25rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .edu__list span {
+    color: var(--color-muted);
+    font-size: 0.9375rem;
+  }
+  .edu__list .mono {
+    font-size: 0.8125rem;
+  }
+</style>

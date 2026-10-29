@@ -1,0 +1,194 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Button from '../components/Button.astro';
+import SectionHead from '../components/SectionHead.astro';
+import ServiceGrid from '../components/ServiceGrid.astro';
+import ProcessSteps from '../components/ProcessSteps.astro';
+import ContactSection from '../components/ContactSection.astro';
+import Icon from '../components/Icon.astro';
+import { services } from '../data/services';
+import { href } from '../lib/url';
+
+const crumbs = [{ name: 'Services', path: 'services' }];
+const why = [
+  { title: 'You talk to the developer', body: 'No account manager or hand-offs. The person on the call is the person writing and reviewing the code.' },
+  { title: 'Scope in writing first', body: 'Features, stack, exclusions, risks and how success is measured — agreed before work starts.' },
+  { title: 'Tested, not just demoed', body: 'Automated tests on the flows that earn money, so launch day is uneventful.' },
+  { title: 'You keep control', body: 'Code, repositories, hosting and analytics set up in your accounts wherever possible.' },
+];
+---
+
+<Base
+  title="Full-Stack Web Development Services — Storefronts, Laravel, WooCommerce, Shopify"
+  description="Full-stack web development services: headless storefronts, Laravel and Node back ends, WooCommerce plugins, Shopify CRO, performance, technical SEO and automated testing."
+  path="services"
+  breadcrumbs={crumbs}
+>
+  <PageHero
+    label="Services"
+    aside="focused, scoped, tested"
+    title="Full-stack web development for businesses that sell online"
+    lead="Every service is built around one idea: a site that loads fast, sells, and keeps working when you change it. Pick one, or describe the problem and I’ll suggest where to start."
+    crumbs={crumbs}
+  >
+    <Fragment slot="actions">
+      <Button href={href('contact')} size="lg">Start a project</Button>
+      <Button href="#all-services" variant="secondary" size="lg" icon="arrow-right">Browse services</Button>
+    </Fragment>
+  </PageHero>
+
+  <section class="section" id="all-services" aria-labelledby="all-services-title">
+    <div class="wrap">
+      <h2 id="all-services-title" class="sr-only">All services</h2>
+      <ServiceGrid />
+    </div>
+  </section>
+
+  <section class="section band" aria-labelledby="detail-title">
+    <div class="wrap">
+      <SectionHead
+        id="detail-title"
+        label="In detail"
+        aside="what each one covers"
+        title="What you get with each service"
+      />
+      <ol class="sl" role="list">
+        {
+          services.map((s, i) => (
+            <li class="sl__row" data-reveal>
+              <span class="mono sl__num">{String(i + 1).padStart(2, '0')}</span>
+              <div class="sl__main">
+                <h3 class="t-h3">
+                  <a href={href(`services/${s.slug}`)}>{s.name}</a>
+                </h3>
+                <p class="muted">{s.intro}</p>
+              </div>
+              <ul class="sl__list" aria-label={`${s.name}: deliverables`}>
+                {s.deliverables.slice(0, 4).map((d) => (
+                  <li>
+                    <Icon name="check" size={16} />
+                    {d.title}
+                  </li>
+                ))}
+              </ul>
+              <a href={href(`services/${s.slug}`)} class="arrow-link sl__go" aria-label={`${s.name}: details`}>
+                Details <Icon name="arrow-up-right" />
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="why-title">
+    <div class="wrap">
+      <SectionHead id="why-title" label="Working together" aside="what to expect" title="Why clients work with one senior developer" />
+      <ul class="why" role="list">
+        {
+          why.map((w, i) => (
+            <li data-reveal style={`--d:${i}`}>
+              <span class="mono why__num">{String(i + 1).padStart(2, '0')}</span>
+              <h3 class="t-h3">{w.title}</h3>
+              <p class="muted">{w.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section band" aria-labelledby="process-title">
+    <div class="wrap">
+      <SectionHead id="process-title" label="Process" aside="same for every service" title="Discover, plan, build, launch & measure" />
+      <ProcessSteps />
+    </div>
+  </section>
+
+  <ContactSection source="services" />
+</Base>
+
+<style>
+  .sl {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--color-line);
+  }
+  .sl__row {
+    display: grid;
+    gap: 1rem 2rem;
+    padding: clamp(24px, 3vw, 40px) 0;
+    border-bottom: 1px solid var(--color-line);
+  }
+  @media (min-width: 1024px) {
+    .sl__row {
+      grid-template-columns: 3rem minmax(0, 1.4fr) minmax(0, 1fr) auto;
+      align-items: start;
+    }
+  }
+  .sl__num {
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+    padding-top: 0.4rem;
+  }
+  .sl__main {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .sl__main a {
+    text-decoration: none;
+  }
+  .sl__main a:hover {
+    color: var(--color-accent-hover);
+  }
+  .sl__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.5rem;
+    font-size: 0.9375rem;
+  }
+  .sl__list li {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+  .sl__list :global(svg) {
+    flex: none;
+    margin-top: 0.25rem;
+    color: var(--color-accent);
+  }
+  .why {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+  }
+  @media (min-width: 768px) {
+    .why {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1200px) {
+    .why {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  .why li {
+    display: grid;
+    align-content: start;
+    gap: 0.75rem;
+    padding: clamp(24px, 2.4vw, 32px);
+    border-top: 2px solid var(--color-ink);
+    background: var(--color-surface);
+    border-radius: 0 0 var(--radius-card) var(--radius-card);
+  }
+  .why__num {
+    font-size: 0.8125rem;
+    color: var(--color-accent-hover);
+  }
+</style>
