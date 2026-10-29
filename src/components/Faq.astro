@@ -1,0 +1,93 @@
+---
+/** FAQ accordion on native <details>/<summary>: keyboard and no-JS friendly. */
+import Icon from './Icon.astro';
+
+interface Props {
+  items: readonly { q: string; a: string }[];
+  headingLevel?: 'h3' | 'h4';
+}
+const { items, headingLevel: H = 'h3' } = Astro.props;
+---
+
+<div class="faq">
+  {
+    items.map((item, i) => (
+      <details class="faq__item" open={i === 0}>
+        <summary>
+          <H class="faq__q">{item.q}</H>
+          <span class="faq__icon">
+            <Icon name="plus" size={18} />
+          </span>
+        </summary>
+        <div class="faq__a">
+          <p>{item.a}</p>
+        </div>
+      </details>
+    ))
+  }
+</div>
+
+<style>
+  .faq {
+    border-top: 1px solid var(--color-line);
+  }
+  .faq__item {
+    border-bottom: 1px solid var(--color-line);
+  }
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    min-height: 64px;
+    padding: 1.125rem 0;
+    cursor: pointer;
+    list-style: none;
+    border-radius: 6px;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq__q {
+    font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem);
+    font-weight: 520;
+    letter-spacing: -0.015em;
+    line-height: 1.35;
+    transition: color 0.2s ease;
+  }
+  summary:hover .faq__q {
+    color: var(--color-accent-hover);
+  }
+  .faq__icon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--color-line);
+    border-radius: 10px;
+    background: var(--color-surface);
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  .faq__icon :global(svg) {
+    transition: transform 0.35s var(--ease-out-soft);
+  }
+  details[open] .faq__icon :global(svg) {
+    transform: rotate(45deg);
+  }
+  details[open] .faq__icon {
+    background: var(--color-ink);
+    color: var(--color-paper);
+    border-color: var(--color-ink);
+  }
+  .faq__a {
+    padding: 0 3.5rem 1.5rem 0;
+    color: var(--color-ink-soft);
+    max-width: 72ch;
+  }
+  @media (max-width: 640px) {
+    .faq__a {
+      padding-right: 0;
+    }
+  }
+</style>

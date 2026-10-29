@@ -1,0 +1,155 @@
+---
+import Icon, { type IconName } from './Icon.astro';
+
+interface Props {
+  href?: string;
+  variant?: 'primary' | 'secondary' | 'light' | 'ghost-light';
+  size?: 'md' | 'lg';
+  icon?: IconName | null;
+  type?: 'button' | 'submit';
+  class?: string;
+  external?: boolean;
+  download?: boolean;
+  [key: string]: unknown;
+}
+
+const {
+  href,
+  variant = 'primary',
+  size = 'md',
+  icon = 'arrow-up-right',
+  type = 'button',
+  class: className,
+  external = false,
+  download = false,
+  ...rest
+} = Astro.props;
+
+const cls = ['btn', `btn--${variant}`, `btn--${size}`, className].filter(Boolean).join(' ');
+const linkAttrs = external ? { target: '_blank', rel: 'noopener noreferrer' } : {};
+---
+
+{
+  href ? (
+    <a href={href} class={cls} {...linkAttrs} download={download || undefined} {...rest}>
+      <span class="btn__label"><slot /></span>
+      {icon && <span class="btn__icon"><Icon name={icon} size={18} /></span>}
+    </a>
+  ) : (
+    <button type={type} class={cls} {...rest}>
+      <span class="btn__label"><slot /></span>
+      {icon && <span class="btn__icon"><Icon name={icon} size={18} /></span>}
+    </button>
+  )
+}
+
+<style is:global>
+  .btn {
+    --btn-bg: var(--color-ink);
+    --btn-fg: var(--color-paper);
+    --btn-sweep: var(--color-accent-hover);
+    --btn-sweep-fg: var(--color-on-accent);
+    --btn-border: transparent;
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    min-height: 48px;
+    padding: 0 1.125rem 0 1.375rem;
+    border: 1px solid var(--btn-border);
+    border-radius: 10px;
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    font-weight: 520;
+    letter-spacing: -0.005em;
+    line-height: 1.2;
+    text-decoration: none;
+    max-width: 100%;
+    text-align: left;
+    cursor: pointer;
+    overflow: hidden;
+    transition: color 0.45s var(--ease-sweep), border-color 0.45s var(--ease-sweep);
+  }
+  .btn::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
+    background: var(--btn-sweep);
+    transform: scaleX(0);
+    transform-origin: right center;
+    transition: transform 0.45s var(--ease-sweep);
+  }
+  .btn:hover::before,
+  .btn:focus-visible::before {
+    transform: scaleX(1);
+    transform-origin: left center;
+  }
+  .btn:hover,
+  .btn:focus-visible {
+    color: var(--btn-sweep-fg);
+    border-color: var(--btn-sweep);
+  }
+  .btn:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+  .btn__label {
+    padding-block: 0.625rem;
+    text-wrap: balance;
+  }
+  .btn__icon {
+    flex: none;
+    display: inline-grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    margin-right: -4px;
+    border-radius: 7px;
+    background: color-mix(in srgb, currentColor 14%, transparent);
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.45s var(--ease-sweep);
+  }
+  .btn:hover .btn__icon svg {
+    transform: translate(2px, -2px);
+  }
+  .btn__icon svg {
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .btn--lg {
+    min-height: 56px;
+    padding: 0 1.25rem 0 1.625rem;
+    font-size: 1rem;
+  }
+  .btn--secondary {
+    --btn-bg: transparent;
+    --btn-fg: var(--color-ink);
+    --btn-sweep: var(--color-ink);
+    --btn-sweep-fg: var(--color-paper);
+    --btn-border: var(--color-line-strong);
+  }
+  .btn--secondary .btn__icon,
+  .btn--light .btn__icon {
+    background: color-mix(in srgb, currentColor 10%, transparent);
+  }
+  .btn--light {
+    --btn-bg: var(--color-on-night);
+    --btn-fg: var(--color-night-ink);
+    --btn-sweep: var(--color-accent-hover);
+    --btn-sweep-fg: var(--color-on-accent);
+  }
+  .btn--ghost-light {
+    --btn-bg: transparent;
+    --btn-fg: var(--color-on-night);
+    --btn-sweep: var(--color-on-night);
+    --btn-sweep-fg: var(--color-night-ink);
+    --btn-border: rgb(247 247 245 / 0.3);
+  }
+  .btn[disabled] {
+    opacity: 0.6;
+    cursor: progress;
+  }
+</style>

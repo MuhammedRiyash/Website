@@ -1,0 +1,106 @@
+---
+/**
+ * Tech filter chips. Place inside an element with `data-filter-root`; items inside the same root
+ * need `data-filter-item` and `data-tech="Astro|Laravel"`. Hidden without JS (everything shows).
+ * `available` lists the techs present in the list, so chips that would match nothing are never rendered.
+ */
+import { techFilters, type Tech } from '../data/work';
+
+interface Props {
+  label?: string;
+  total: number;
+  noun?: string;
+  available: readonly Tech[];
+}
+const { label = 'Filter by technology', total, noun = 'projects', available } = Astro.props;
+const chips = techFilters.filter((t) => available.includes(t));
+---
+
+<div class="filter" data-filter-bar>
+  <div class="filter__chips" role="group" aria-label={label}>
+    <button type="button" class="filter__chip" data-filter="all" aria-pressed="true">All</button>
+    {
+      chips.map((t) => (
+        <button type="button" class="filter__chip" data-filter={t} aria-pressed="false">
+          {t}
+        </button>
+      ))
+    }
+  </div>
+  <p class="filter__count mono" aria-live="polite" data-filter-count data-noun={noun}>
+    Showing {total} of {total} {noun}
+  </p>
+</div>
+
+<style>
+  /* Shown from first paint when JS is on (html.js is set in <head>), so it never pushes the cards down. */
+  :global(html:not(.js)) .filter {
+    display: none;
+  }
+  .filter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    margin-bottom: 2rem;
+  }
+  .filter__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .filter__chip {
+    min-height: 44px;
+    padding: 0 1rem;
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+    background: var(--color-surface);
+    color: var(--color-ink-soft);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+  .filter__chip:hover {
+    border-color: var(--color-line-strong);
+    color: var(--color-ink);
+  }
+  .filter__chip[aria-pressed='true'] {
+    background: var(--color-ink);
+    border-color: var(--color-ink);
+    color: var(--color-paper);
+  }
+  .filter__count {
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-filter-root]').forEach((root) => {
+    const bar = root.querySelector<HTMLElement>('[data-filter-bar]');
+    if (!bar) return;
+    const buttons = Array.from(bar.querySelectorAll<HTMLButtonElement>('[data-filter]'));
+    const items = Array.from(root.querySelectorAll<HTMLElement>('[data-filter-item]'));
+    const count = bar.querySelector<HTMLElement>('[data-filter-count]');
+    const noun = count?.dataset.noun ?? 'projects';
+
+    const apply = (filter: string) => {
+      let shown = 0;
+      items.forEach((it) => {
+        const match = filter === 'all' || (it.dataset.tech ?? '').split('|').includes(filter);
+        it.hidden = !match;
+        if (match) {
+          shown += 1;
+          it.classList.add('is-in');
+        }
+      });
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filter === filter)));
+      if (count) count.textContent = `Showing ${shown} of ${items.length} ${noun}`;
+      root.dispatchEvent(new CustomEvent('filter:change'));
+    };
+
+    buttons.forEach((btn) => btn.addEventListener('click', () => apply(btn.dataset.filter!)));
+  });
+</script>

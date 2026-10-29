@@ -1,0 +1,54 @@
+---
+import Eyebrow from './Eyebrow.astro';
+
+interface Props {
+  label: string;
+  aside?: string;
+  title: string;
+  id?: string;
+  intro?: string;
+  align?: 'split' | 'stack';
+  class?: string;
+}
+const { label, aside, title, id, intro, align = 'split', class: className } = Astro.props;
+---
+
+<div class:list={['section-head', `section-head--${align}`, className]} data-reveal>
+  <div>
+    <Eyebrow label={label} aside={aside} />
+    <h2 id={id} class="t-h2 mt-5">{title}</h2>
+  </div>
+  {
+    (intro || Astro.slots.has('default')) && (
+      <div class="section-head__side">
+        {intro && <p class="t-lead">{intro}</p>}
+        <slot />
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .section-head {
+    display: grid;
+    gap: 1.5rem;
+    margin-bottom: clamp(40px, 5vw, 64px);
+  }
+  .section-head h2 {
+    max-width: 18ch;
+  }
+  .section-head__side {
+    display: grid;
+    gap: 1.25rem;
+    align-content: end;
+    justify-items: start;
+    max-width: 52ch;
+  }
+  @media (min-width: 1024px) {
+    .section-head--split {
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+      align-items: end;
+      gap: 4rem;
+    }
+  }
+</style>

@@ -1,0 +1,220 @@
+---
+import Button from './Button.astro';
+import Icon, { type IconName } from './Icon.astro';
+import Wordmark from './Wordmark.astro';
+import { person, socials } from '../data/site';
+import { services } from '../data/services';
+import { caseStudies } from '../data/work';
+import { href, asset } from '../lib/url';
+
+interface Props {
+  /** Hide the big CTA block (e.g. on the contact page, which is the CTA). */
+  showCta?: boolean;
+}
+const { showCta = true } = Astro.props;
+
+const year = new Date().getFullYear();
+const socialIcon: Record<string, IconName> = { LinkedIn: 'linkedin', GitHub: 'github', X: 'x', WhatsApp: 'whatsapp' };
+const featured = caseStudies.filter((c) => c.featured).slice(0, 5);
+---
+
+<footer class="site-footer on-night" id="site-footer">
+  <div class="wrap">
+    {
+      showCta && (
+        <div class="site-footer__cta">
+          <h2 class="t-h1">
+            Have a site that should be faster, sell more, or simply work? <span class="site-footer__soft">Let’s talk.</span>
+          </h2>
+          <div class="site-footer__cta-actions">
+            <Button href={href('contact')} variant="light" size="lg">
+              Start a project
+            </Button>
+            <Button href={person.whatsapp} variant="ghost-light" size="lg" icon="whatsapp" external>
+              WhatsApp me
+            </Button>
+          </div>
+        </div>
+      )
+    }
+
+    <div class="site-footer__grid">
+      <div class="site-footer__about">
+        <a href={href()} class="site-footer__brand" aria-label={`${person.shortName} — home`}>
+          <Wordmark tone="paper" />
+        </a>
+        <p>
+          {person.title} in {person.location}. Full-stack web development for businesses that need fast, tested websites and online stores.
+        </p>
+        <Button href={asset(person.resume)} variant="ghost-light" icon="download" download>
+          Download CV
+        </Button>
+      </div>
+
+      <nav aria-labelledby="footer-services">
+        <h2 id="footer-services" class="site-footer__title">Services</h2>
+        <ul>
+          {services.map((s) => <li><a href={href(`services/${s.slug}`)}>{s.name}</a></li>)}
+        </ul>
+      </nav>
+
+      <nav aria-labelledby="footer-work">
+        <h2 id="footer-work" class="site-footer__title">Work</h2>
+        <ul>
+          {featured.map((c) => <li><a href={href(`work/${c.slug}`)}>{c.client}</a></li>)}
+          <li><a href={href('work')}>All work</a></li>
+        </ul>
+      </nav>
+
+      <div>
+        <h2 class="site-footer__title">Contact</h2>
+        <ul>
+          <li><a href={`mailto:${person.email}`}>{person.email}</a></li>
+          <li><a href={person.phoneHref}>{person.phone}</a></li>
+          <li><a href={href('about')}>About me</a></li>
+          <li><a href={person.portfolio} target="_blank" rel="noopener noreferrer">Personal portfolio</a></li>
+        </ul>
+        <ul class="site-footer__social" aria-label="Profiles">
+          {
+            socials.map((s) => (
+              <li>
+                <a href={s.href} target="_blank" rel="noopener noreferrer" aria-label={`${s.label} (${s.handle})`}>
+                  <Icon name={socialIcon[s.label]} size={18} />
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+
+    <div class="site-footer__base">
+      <p>© {year} {person.name}. {person.location}.</p>
+      <p>
+        Built with Astro. <a href="https://github.com/MuhammedRiyash/Website" target="_blank" rel="noopener noreferrer">View the source</a>.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--color-night);
+    color: var(--color-night-muted);
+    padding-block: clamp(64px, 8vw, 112px) 2rem;
+  }
+  .site-footer__cta {
+    display: grid;
+    gap: 2rem;
+    padding-bottom: clamp(48px, 7vw, 96px);
+    margin-bottom: clamp(48px, 6vw, 80px);
+    border-bottom: 1px solid var(--color-night-line);
+  }
+  .site-footer__cta h2 {
+    color: var(--color-on-night);
+    max-width: 20ch;
+  }
+  .site-footer__soft {
+    color: var(--color-accent);
+  }
+  .site-footer__cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .site-footer__grid {
+    display: grid;
+    gap: 2.5rem 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  }
+  @media (min-width: 1024px) {
+    .site-footer__grid {
+      grid-template-columns: 1.4fr 1.1fr 0.9fr 1.1fr;
+    }
+    .site-footer__cta {
+      grid-template-columns: 1.6fr 1fr;
+      align-items: end;
+    }
+    .site-footer__cta-actions {
+      justify-content: flex-end;
+    }
+  }
+  .site-footer__about {
+    display: grid;
+    gap: 1.25rem;
+    justify-items: start;
+    align-content: start;
+    max-width: 36ch;
+  }
+  .site-footer__about p {
+    font-size: 0.9375rem;
+  }
+  .site-footer__brand {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    text-decoration: none;
+  }
+  .site-footer__title {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-on-night);
+    margin-bottom: 0.75rem;
+  }
+  .site-footer ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .site-footer li a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    color: var(--color-night-muted);
+    font-size: 0.9375rem;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+    transition: color 0.2s ease;
+  }
+  .site-footer li a:hover {
+    color: var(--color-on-night);
+  }
+  .site-footer__social {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem !important;
+  }
+  .site-footer__social a {
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--color-night-line);
+    border-radius: 10px;
+    color: var(--color-on-night) !important;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+  }
+  .site-footer__social a:hover {
+    background: var(--color-accent-hover);
+    border-color: var(--color-accent-hover);
+  }
+  .site-footer__base {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+    margin-top: clamp(48px, 6vw, 80px);
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-night-line);
+    font-size: 0.8125rem;
+  }
+  .site-footer__base a {
+    color: var(--color-on-night);
+    text-underline-offset: 0.2em;
+  }
+  .site-footer :focus-visible {
+    outline-color: var(--color-on-night);
+  }
+</style>

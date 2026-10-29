@@ -1,0 +1,59 @@
+---
+/**
+ * Case studies as sticky stacked cards. With `filter` (default) it renders its own tech filter;
+ * pass `filter={false}` when a parent `data-filter-root` already provides one.
+ */
+import CaseCard from './CaseCard.astro';
+import TechFilter from './TechFilter.astro';
+import type { CaseStudy } from '../data/work';
+
+interface Props {
+  items: CaseStudy[];
+  headingLevel?: 'h2' | 'h3';
+  filter?: boolean;
+}
+const { items, headingLevel = 'h3', filter = true } = Astro.props;
+---
+
+{
+  filter ? (
+    <div data-filter-root>
+      <TechFilter total={items.length} noun="case studies" available={items.flatMap((i) => i.filters)} />
+      <ol class="cases" role="list">
+        {items.map((item, i) => <CaseCard item={item} index={i} headingLevel={headingLevel} />)}
+      </ol>
+    </div>
+  ) : (
+    <ol class="cases" role="list">
+      {items.map((item, i) => <CaseCard item={item} index={i} headingLevel={headingLevel} />)}
+    </ol>
+  )
+}
+
+<style>
+  .cases {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 24px;
+  }
+  @media (min-width: 1024px) and (min-height: 800px) {
+    .cases :global(> li) {
+      position: sticky;
+      top: calc(80px + 24px);
+    }
+    .cases :global(> li:nth-child(2)) {
+      top: calc(80px + 36px);
+    }
+    .cases :global(> li:nth-child(3)) {
+      top: calc(80px + 48px);
+    }
+    .cases :global(> li:nth-child(4)) {
+      top: calc(80px + 60px);
+    }
+    .cases :global(> li:nth-child(n + 5)) {
+      top: calc(80px + 72px);
+    }
+  }
+</style>

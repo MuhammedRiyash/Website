@@ -1,0 +1,582 @@
+---
+/**
+ * High-fidelity phone-width renders (390-wide layouts) paired with Mockup.astro's desktop renders.
+ * Realistic sample data; captioned "Illustrative · sample data" by the parent.
+ */
+import type { RenderVariant } from '../data/visuals';
+
+interface Props {
+  variant: RenderVariant;
+}
+const { variant } = Astro.props;
+---
+
+<div class:list={['ph', `ph--${variant}`]}>
+  <div class="ph__status"><span>9:41</span><span>●●● 5G</span></div>
+
+  {
+    variant === 'zetstore-admin' && (
+      <div class="ph__body">
+        <p class="ph__top">
+          <b>GSTR-1</b>
+          <span class="tag">Oct 2026</span>
+        </p>
+        <div class="seg">
+          <span class="is-on">B2B</span>
+          <span>B2CS</span>
+          <span>HSN</span>
+        </div>
+        {[
+          ['ZS/26-27/00412', '29AAKCG4821M1Z3', '₹18,400', 'HSN 1008'],
+          ['ZS/26-27/00413', '33AAFCS7724Q1ZK', '₹9,250', 'HSN 1006'],
+          ['ZS/26-27/00415', '29AABCV3390D1Z8', '₹12,780', 'HSN 1515'],
+        ].map((r) => (
+          <div class="row-card">
+            <p>
+              <b class="mono">{r[0]}</b>
+              <span>{r[2]}</span>
+            </p>
+            <p class="muted mono">{r[1]}</p>
+            <p class="muted">{r[3]} · GST 5%</p>
+          </div>
+        ))}
+        <span class="cta">⤓ Export CSV</span>
+      </div>
+    )
+  }
+
+  {
+    variant === 'mystery-admin' && (
+      <div class="ph__body ph__body--wp">
+        <p class="ph__top">
+          <b>Mystery Boxes</b>
+          <span class="tag tag--blue">109 fulfilled</span>
+        </p>
+        {[
+          ['#YO-48213', 'Kawaii Mystery Box · ₹599', 'Fulfilled', 'Sanrio gel pen ×2 · washi tape'],
+          ['#YO-48210', 'Korean Journal Box · ₹899', 'Fulfilled', 'A5 journal · sticker sheets'],
+          ['#YO-48207', 'Mini Surprise Box · ₹349', 'Awaiting payment', '—'],
+        ].map((b) => (
+          <div class="row-card">
+            <p>
+              <b class="blue">{b[0]}</b>
+              <span class:list={['st', b[2] === 'Fulfilled' ? 'st--ok' : 'st--wait']}>{b[2]}</span>
+            </p>
+            <p>{b[1]}</p>
+            <p class="muted">{b[3]}</p>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  {
+    variant === 'tests' && (
+      <div class="ph__body ph__body--ci">
+        <p class="ph__top">
+          <b>CI · pull request #214</b>
+        </p>
+        {['Type-check', 'Unit tests (Vitest)', 'E2E · mobile', 'E2E · desktop', 'axe-core scan', 'Build'].map((c) => (
+          <p class="check">
+            <span class="ok">✓</span> {c}
+          </p>
+        ))}
+        <span class="cta">All checks passed</span>
+      </div>
+    )
+  }
+
+  {
+    variant === 'woo-perf' && (
+      <div class="ph__body">
+        <p class="ph__top">
+          <b>Page weight</b>
+          <span class="tag">product page</span>
+        </p>
+        <div class="bars">
+          <p>
+            <span>Before</span>
+            <i style="--w:100%" class="bar bar--before" />
+          </p>
+          <p>
+            <span>After</span>
+            <i style="--w:72%" class="bar" />
+          </p>
+        </div>
+        <div class="row-card">
+          <p>
+            <b>−251 KB</b>
+          </p>
+          <p class="muted">19 unused CSS/JS files removed per page</p>
+        </div>
+        <div class="row-card">
+          <p>
+            <b>~0.6 s</b>
+          </p>
+          <p class="muted">Meta API calls off each page load</p>
+        </div>
+        <span class="tag">cf-cache-status: HIT</span>
+      </div>
+    )
+  }
+
+  {
+    variant === 'shopify-cro' && (
+      <div class="ph__body ph__body--pdp">
+        <div class="pimg">
+          <svg viewBox="0 0 120 120" aria-hidden="true">
+            <ellipse cx="60" cy="100" rx="38" ry="6" fill="#d9c7b2" />
+            <path d="M30 40h52v44a14 14 0 0 1-14 14H44a14 14 0 0 1-14-14Z" fill="#c26b47" />
+            <path d="M82 50h8a10 10 0 0 1 0 20h-8" fill="none" stroke="#c26b47" stroke-width="6" />
+          </svg>
+        </div>
+        <b class="ptitle">Terracotta Pour-Over Mug</b>
+        <p class="pprice">
+          ₹1,250 <s>₹1,490</s>
+        </p>
+        <div class="bundle">
+          <b>Bundle &amp; save 10%</b>
+          <p>Mug + coaster set · ₹1,575</p>
+        </div>
+        <div class="atc">
+          <span>₹1,250</span>
+          <span class="cta cta--inline">Add to cart</span>
+        </div>
+      </div>
+    )
+  }
+
+  {
+    variant === 'fiomis-store' && (
+      <div class="ph__body ph__body--fio">
+        <p class="ph__top">
+          <b class="brand">FIOMIS</b>
+          <span>Bag (2)</span>
+        </p>
+        <div class="fhero">
+          <small>Autumn drop</small>
+          <b>Choose Better.</b>
+        </div>
+        <div class="fgrid">
+          {[
+            ['Oversized Tee · Sand', '₹899', '#c9b48f'],
+            ['Heavyweight Hoodie · Olive', '₹1,999', '#6b7454'],
+            ['Relaxed Tee · Ink', '₹799', '#262a33'],
+            ['Boxy Tee · Rust', '₹849', '#b4583a'],
+          ].map(([n, p, c]) => (
+            <div>
+              <div class="fimg">
+                <svg viewBox="0 0 100 100" aria-hidden="true">
+                  <path d="M30 22 42 16h16l12 6 14 14-10 10-6-5v45H32V41l-6 5-10-10Z" fill={c} />
+                </svg>
+              </div>
+              <b>{n}</b>
+              <span>{p}</span>
+            </div>
+          ))}
+        </div>
+        <div class="sizes">
+          <i>S</i>
+          <i class="is-on">M</i>
+          <i>L</i>
+          <i>XL</i>
+        </div>
+      </div>
+    )
+  }
+
+  {
+    variant === 'inventra' && (
+      <div class="ph__body">
+        <p class="ph__top">
+          <b>Overview</b>
+          <span class="tag">This month</span>
+        </p>
+        <div class="kgrid">
+          {[
+            ['Turnover', '6.4×'],
+            ['Days of inv.', '57'],
+            ['Fill rate', '96.2%'],
+            ['EOQ', '420 u'],
+          ].map(([l, v]) => (
+            <div class="k">
+              <small>{l}</small>
+              <b>{v}</b>
+            </div>
+          ))}
+        </div>
+        <svg class="spark" viewBox="0 0 100 34" preserveAspectRatio="none" aria-hidden="true">
+          <polyline points="0,28 10,26 20,27 30,21 40,22 50,16 60,18 70,12 80,13 90,8 100,9" fill="none" stroke="#0f8a6a" stroke-width="2" vector-effect="non-scaling-stroke" />
+        </svg>
+        <div class="row-card">
+          <p>
+            <b class="mono">PO-2026-0148</b>
+            <span class="st st--ok">Approved</span>
+          </p>
+          <p class="muted">Sharma Traders · ₹1,24,500</p>
+        </div>
+      </div>
+    )
+  }
+
+  {
+    variant === 'ai-saas' && (
+      <div class="ph__body">
+        <p class="ph__top">
+          <b>X thread</b>
+          <span class="tag">6 posts</span>
+        </p>
+        <div class="row-card">
+          <p>
+            <b>1/6</b>
+          </p>
+          <p>We halved checkout time on a Shopify store. The payment gateway wasn’t the problem. 🧵</p>
+        </div>
+        <div class="row-card">
+          <p>
+            <b>2/6</b>
+          </p>
+          <p>Three apps were injecting scripts on the cart page. Two did the same job.</p>
+        </div>
+        <div class="slide">
+          <b>5 checkout fixes that actually move conversion</b>
+          <span>LinkedIn · 1/7</span>
+        </div>
+      </div>
+    )
+  }
+  {
+    variant !== 'tests' && variant !== 'shopify-cro' && (
+      <nav class="tabbar" aria-hidden="true">
+        {(variant === 'fiomis-store' ? ['Shop', 'Search', 'Bag', 'Account'] : variant === 'ai-saas' ? ['Drafts', 'New', 'Library', 'Account'] : ['Home', 'Orders', 'Reports', 'More']).map((t, i) => (
+          <span class:list={{ 'is-on': i === 0 }}>{t}</span>
+        ))}
+      </nav>
+    )
+  }
+</div>
+
+<style>
+  .ph {
+    position: absolute;
+    inset: 0;
+    font-size: calc(100cqi / 22);
+    font-family: var(--font-sans);
+    line-height: 1.3;
+    color: #0e1014;
+    background: #fff;
+    overflow: hidden;
+  }
+  .ph b {
+    font-weight: 600;
+  }
+  .ph__status {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.8em 1.3em 0.4em;
+    font-size: 0.8em;
+    font-weight: 600;
+  }
+  .ph__body {
+    display: grid;
+    gap: 0.7em;
+    padding: 0.6em 1em 1em;
+    font-size: 0.92em;
+  }
+  .ph__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .ph__top b {
+    font-size: 1.35em;
+    letter-spacing: -0.02em;
+  }
+  .tag {
+    padding: 0.2em 0.6em;
+    border-radius: 999px;
+    background: #e7f4ef;
+    color: #0b6e55;
+    font-size: 0.8em;
+    font-family: var(--font-mono);
+    justify-self: start;
+  }
+  .tag--blue {
+    background: #e5f0fa;
+    color: #2271b1;
+  }
+  .mono {
+    font-family: var(--font-mono);
+  }
+  .muted {
+    color: #5b6270;
+  }
+  .blue {
+    color: #2271b1;
+  }
+  .seg {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding: 0.2em;
+    border-radius: 0.6em;
+    background: #f1f1ef;
+    text-align: center;
+  }
+  .seg span {
+    padding: 0.35em;
+    border-radius: 0.45em;
+  }
+  .seg .is-on {
+    background: #fff;
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgb(14 16 20 / 0.15);
+  }
+  .row-card {
+    display: grid;
+    gap: 0.25em;
+    padding: 0.7em 0.8em;
+    border: 1px solid rgb(14 16 20 / 0.1);
+    border-radius: 0.7em;
+    background: #fff;
+  }
+  .row-card p {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5em;
+  }
+  .st {
+    padding: 0.1em 0.5em;
+    border-radius: 0.35em;
+    font-size: 0.85em;
+  }
+  .st--ok {
+    background: #e7f4ef;
+    color: #0b6e55;
+  }
+  .st--wait {
+    background: #fbf1df;
+    color: #8a5a0f;
+  }
+  .cta {
+    display: block;
+    padding: 0.7em;
+    border-radius: 0.6em;
+    background: #0f8a6a;
+    color: #fff;
+    text-align: center;
+    font-weight: 600;
+  }
+  .cta--inline {
+    display: inline-block;
+    padding: 0.55em 1.2em;
+  }
+  .ph__body--wp {
+    background: #f0f0f1;
+    min-height: 100%;
+  }
+  .ph--tests {
+    background: #0e1014;
+    color: #d6dae1;
+  }
+  .ph--tests .ph__status {
+    color: #fff;
+  }
+  .check {
+    padding: 0.55em 0.7em;
+    border-radius: 0.5em;
+    background: rgb(247 247 245 / 0.06);
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+  .ok {
+    color: #3fd0a6;
+  }
+  .ph__body--ci .ph__top b {
+    color: #fff;
+    font-size: 1.1em;
+  }
+  .bars {
+    display: grid;
+    gap: 0.5em;
+  }
+  .bars p {
+    display: grid;
+    grid-template-columns: 3.5em 1fr;
+    align-items: center;
+    gap: 0.5em;
+    font-size: 0.85em;
+  }
+  .bar {
+    display: block;
+    height: 0.9em;
+    width: var(--w);
+    border-radius: 0.3em;
+    background: #0f8a6a;
+  }
+  .bar--before {
+    background: #d6dae1;
+  }
+  .ph__body--pdp {
+    padding-bottom: 4.5em;
+  }
+  .pimg {
+    aspect-ratio: 1;
+    border-radius: 0.8em;
+    background: #f4ece3;
+    display: grid;
+    place-items: center;
+  }
+  .pimg svg {
+    width: 66%;
+  }
+  .ptitle {
+    font-size: 1.3em;
+    letter-spacing: -0.02em;
+  }
+  .pprice {
+    font-weight: 600;
+    font-size: 1.15em;
+  }
+  .pprice s {
+    color: #8a909c;
+    font-weight: 400;
+    font-size: 0.8em;
+  }
+  .bundle {
+    padding: 0.6em 0.8em;
+    border: 1.5px solid #0f8a6a;
+    border-radius: 0.7em;
+    background: #e7f4ef;
+  }
+  .atc {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8em 1em 1.2em;
+    background: #fff;
+    border-top: 1px solid rgb(14 16 20 / 0.1);
+    box-shadow: 0 -0.6em 1.2em -0.8em rgb(14 16 20 / 0.3);
+    font-weight: 600;
+  }
+  .ph--fiomis-store,
+  .ph__body--fio {
+    background: #f4f1ec;
+  }
+  .brand {
+    letter-spacing: 0.3em;
+  }
+  .fhero {
+    padding: 1.2em 1em;
+    border-radius: 0.8em;
+    color: #f7f7f5;
+    background:
+      radial-gradient(circle at 85% 30%, rgb(15 138 106 / 0.75), transparent 50%),
+      #1b1d22;
+  }
+  .fhero small {
+    display: block;
+    color: #b7f0dd;
+    font-family: var(--font-mono);
+    font-size: 0.75em;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .fhero b {
+    font-size: 1.8em;
+    letter-spacing: -0.04em;
+  }
+  .fgrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6em;
+    font-size: 0.85em;
+  }
+  .fgrid > div {
+    display: grid;
+    gap: 0.1em;
+  }
+  .fimg {
+    aspect-ratio: 1;
+    border-radius: 0.6em;
+    background: #e8e2d8;
+    display: grid;
+    place-items: center;
+  }
+  .fimg svg {
+    width: 80%;
+  }
+  .sizes {
+    display: flex;
+    gap: 0.4em;
+  }
+  .sizes i {
+    font-style: normal;
+    padding: 0.2em 0.6em;
+    border: 1px solid rgb(14 16 20 / 0.2);
+    border-radius: 0.3em;
+  }
+  .sizes .is-on {
+    background: #0e1014;
+    color: #fff;
+  }
+  .kgrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5em;
+  }
+  .k {
+    padding: 0.6em 0.7em;
+    border: 1px solid rgb(14 16 20 / 0.1);
+    border-radius: 0.6em;
+  }
+  .k small {
+    display: block;
+    color: #5b6270;
+    font-size: 0.8em;
+  }
+  .k b {
+    font-size: 1.35em;
+  }
+  .spark {
+    width: 100%;
+    height: 4em;
+  }
+  .slide {
+    display: grid;
+    gap: 0.6em;
+    padding: 1em;
+    border-radius: 0.7em;
+    background: #0e1014;
+    color: #fff;
+  }
+  .slide b {
+    font-size: 1.15em;
+  }
+  .slide span {
+    color: #3fd0a6;
+    font-family: var(--font-mono);
+    font-size: 0.8em;
+  }
+  .tabbar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    padding: 0.7em 0.6em 1.3em;
+    background: rgb(255 255 255 / 0.96);
+    border-top: 1px solid rgb(14 16 20 / 0.1);
+    font-size: 0.72em;
+    text-align: center;
+    color: #5b6270;
+  }
+  .tabbar .is-on {
+    color: #0b6e55;
+    font-weight: 600;
+  }
+</style>

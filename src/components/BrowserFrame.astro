@@ -1,0 +1,92 @@
+---
+/** HTML/CSS browser window used for mockups and real screenshots. */
+interface Props {
+  domain: string;
+  label: string;
+  class?: string;
+}
+const { domain, label, class: className } = Astro.props;
+---
+
+<div class:list={['frame', className]} role="img" aria-label={label}>
+  <div class="frame__bar" aria-hidden="true">
+    <span class="frame__dots"><i></i><i></i><i></i></span>
+    <span class="frame__url">{domain}</span>
+    <span class="frame__spacer"></span>
+  </div>
+  <div class="frame__body" aria-hidden="true">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .frame {
+    margin: 0;
+    border-radius: var(--radius-card);
+    border: 1px solid var(--color-line);
+    background: var(--color-surface);
+    overflow: hidden;
+    box-shadow:
+      0 1px 2px rgb(14 16 20 / 0.04),
+      var(--shadow-lift);
+  }
+  .frame__bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 36px;
+    padding: 0 12px;
+    border-bottom: 1px solid var(--color-line);
+    background: var(--color-frame-bar);
+  }
+  .frame__dots {
+    display: flex;
+    gap: 6px;
+    flex: none;
+  }
+  .frame__dots i {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--color-line-strong);
+  }
+  .frame__url {
+    flex: 1;
+    min-width: 0;
+    max-width: 320px;
+    margin-inline: auto;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--color-ink) 6%, transparent);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-muted);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .frame__spacer {
+    width: 39px;
+    flex: none;
+  }
+  .frame__body {
+    position: relative;
+    container-type: inline-size;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+  }
+  .frame__body :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top left;
+  }
+  /* Dark theme: a slightly stronger edge and softened brightness so light screenshots don't glare. */
+  :global([data-theme='dark']) .frame {
+    border-color: var(--color-line-strong);
+  }
+  :global([data-theme='dark']) .frame__body {
+    filter: brightness(0.93);
+  }
+</style>

@@ -1,0 +1,124 @@
+---
+/**
+ * Desktop + mobile pair for a project visual: browser frame with the desktop screenshot (or coded
+ * render) and a phone frame overlapping its lower-right corner with the mobile screen.
+ */
+import { Image } from 'astro:assets';
+import BrowserFrame from './BrowserFrame.astro';
+import Mockup from './Mockup.astro';
+import MockupPhone from './MockupPhone.astro';
+import type { Visual } from '../data/visuals';
+
+interface Props {
+  visual: Visual;
+  caption?: boolean;
+  sizes?: string;
+  eager?: boolean;
+}
+const { visual, caption = false, sizes = '(min-width: 1024px) 50vw, 100vw', eager = false } = Astro.props;
+const hasPhone = visual.kind === 'render' || Boolean(visual.mobile);
+const loading = eager ? 'eager' : 'lazy';
+---
+
+<figure class="dp">
+  <div class:list={['dp__stage', { 'dp__stage--solo': !hasPhone }]}>
+  <BrowserFrame domain={visual.domain} label={visual.alt}>
+    {
+      visual.kind === 'screenshot' ? (
+        <Image src={visual.desktop} alt="" widths={[480, 800, 1200, 1440]} sizes={sizes} loading={loading} />
+      ) : (
+        <Mockup variant={visual.variant} />
+      )
+    }
+  </BrowserFrame>
+  {
+    hasPhone && (
+      <div class="dp__phone" aria-hidden="true">
+        <div class="dp__screen">
+          {visual.kind === 'screenshot' && visual.mobile ? (
+            <Image src={visual.mobile} alt="" widths={[200, 400]} sizes="(min-width: 1024px) 170px, 26vw" loading={loading} />
+          ) : visual.kind === 'render' ? (
+            <MockupPhone variant={visual.variant} />
+          ) : null}
+        </div>
+      </div>
+    )
+  }
+  {
+    visual.kind === 'screenshot' ? (
+      <span class="dp__badge mono" aria-hidden="true">
+        Live site
+      </span>
+    ) : (
+      <span class="dp__badge dp__badge--render mono" aria-hidden="true">
+        Sample data
+      </span>
+    )
+  }
+  </div>
+  {caption && <figcaption class="dp__caption mono">{visual.caption}</figcaption>}
+</figure>
+
+<style>
+  .dp {
+    margin: 0;
+  }
+  .dp__stage {
+    position: relative;
+    padding: 0 7% 9% 0;
+  }
+  .dp__stage--solo {
+    padding: 0;
+  }
+  .dp__phone {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 24%;
+    padding: 5px;
+    border-radius: 22px;
+    background: #0e1014;
+    outline: 1px solid var(--color-line-strong);
+    box-shadow: var(--shadow-lift);
+  }
+  .dp__screen {
+    position: relative;
+    container-type: inline-size;
+    aspect-ratio: 390 / 844;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #fff;
+  }
+  .dp__screen :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+  }
+  .dp__badge {
+    position: absolute;
+    left: 14px;
+    bottom: calc(9% + 14px);
+    padding: 0.25rem 0.625rem;
+    border-radius: 999px;
+    background: #0e1014;
+    color: #f7f7f5;
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .dp__stage--solo .dp__badge {
+    bottom: 14px;
+  }
+  .dp__badge--render {
+    background: #f7f7f5;
+    color: #0e1014;
+    border: 1px solid rgb(14 16 20 / 0.2);
+  }
+  .dp__caption {
+    margin-top: 0.75rem;
+    font-size: 0.75rem;
+    color: var(--color-muted);
+    text-align: center;
+  }
+</style>

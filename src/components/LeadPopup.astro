@@ -1,0 +1,21 @@
+---
+/**
+ * Deferred lead-capture pop-up. Renders only a small JSON config and the trigger script; the dialog
+ * itself (src/scripts/lead-popup.ts) is fetched with a dynamic import when a trigger fires.
+ * Not rendered on the contact or 404 pages (Base prop `leadPopup={false}`).
+ */
+import { formEndpoint, person } from '../data/site';
+import { services } from '../data/services';
+
+const config = JSON.stringify({
+  endpoint: formEndpoint,
+  email: person.email,
+  whatsapp: person.whatsapp,
+  projectTypes: [...services.map((s) => s.name), 'New website (not sure which stack)', 'Something else'],
+});
+---
+
+<script type="application/json" id="lead-popup-config" set:html={config} />
+<script>
+  import '../scripts/lead-popup-trigger';
+</script>

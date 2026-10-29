@@ -1,0 +1,141 @@
+---
+/** Hero device: a terminal-style "shipped" log built from resume-backed numbers only. */
+const rows = [
+  { name: 'youngonion.in storefront', at: 'astro', metric: '79/168 PRs merged · top contributor' },
+  { name: 'zetstore', at: 'laravel', metric: '110 PRs · inventory & purchasing' },
+  { name: 'mystery-box plugin', at: 'woocommerce', metric: '146 automated tests' },
+  { name: 'woocommerce speed', at: 'cloudflare', metric: '−251 KB · ~0.6 s off each page' },
+  { name: 'shopify CRO ×3', at: 'shopify', metric: '~10% conversion · +12% AOV' },
+  { name: 'wordpress + shopify sites ×12+', at: 'wordpress', metric: '+25% organic traffic (avg)' },
+];
+---
+
+<figure class="log" aria-labelledby="log-caption">
+  <div class="log__bar" aria-hidden="true">
+    <span class="log__dots"><i></i><i></i><i></i></span>
+    <span class="log__title">~/riyash — shipped.log</span>
+  </div>
+  <div class="log__body">
+    <p class="log__cmd" aria-hidden="true"><span class="log__prompt">$</span> git log --shipped --since=2023</p>
+    <ul class="log__rows">
+      {
+        rows.map((r, i) => (
+          <li style={`--i:${i}`}>
+            <span class="log__check" aria-hidden="true">✓</span>
+            <span class="log__name">
+              {r.name} <span class="log__at">@{r.at}</span>
+            </span>
+            <span class="log__metric">{r.metric}</span>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="log__sum" aria-hidden="true"><span class="log__ok">20+ production sites</span> · 3+ years</p>
+  </div>
+  <figcaption id="log-caption" class="sr-only">Selected results from shipped builds.</figcaption>
+</figure>
+
+<style>
+  .log {
+    margin: 0;
+    border-radius: var(--radius-card);
+    background: var(--color-terminal);
+    border: 1px solid var(--color-line);
+    color: #d6dae1;
+    font-family: var(--font-mono);
+    font-size: clamp(0.75rem, 0.7rem + 0.2vw, 0.8125rem);
+    line-height: 1.5;
+    box-shadow:
+      0 1px 2px rgb(14 16 20 / 0.08),
+      var(--shadow-deep);
+    overflow: hidden;
+  }
+  .log__bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    height: 40px;
+    padding: 0 14px;
+    border-bottom: 1px solid rgb(247 247 245 / 0.08);
+  }
+  .log__dots {
+    display: flex;
+    gap: 6px;
+  }
+  .log__dots i {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgb(247 247 245 / 0.18);
+  }
+  .log__title {
+    color: #8a909c;
+    font-size: 0.75rem;
+  }
+  .log__body {
+    padding: clamp(18px, 3vw, 28px);
+    display: grid;
+    gap: 1rem;
+  }
+  .log__cmd {
+    color: #fff;
+  }
+  .log__prompt {
+    color: #3fd0a6;
+  }
+  .log__rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.75rem;
+  }
+  .log__rows li {
+    display: grid;
+    grid-template-columns: 1.25rem 1fr;
+    column-gap: 0.25rem;
+    row-gap: 0.125rem;
+  }
+  .log__check {
+    color: #3fd0a6;
+    grid-row: span 2;
+  }
+  .log__name {
+    color: #fff;
+  }
+  .log__at {
+    color: #8a909c;
+  }
+  .log__metric {
+    color: #b7f0dd;
+    grid-column: 2;
+  }
+  .log__sum {
+    padding-top: 1rem;
+    border-top: 1px dashed rgb(247 247 245 / 0.14);
+    color: #8a909c;
+  }
+  .log__ok {
+    color: var(--color-night);
+    background: #3fd0a6;
+    padding: 0.1em 0.5em;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .js .log__rows li {
+      animation: log-in 0.5s var(--ease-out-soft) both;
+      animation-delay: calc(400ms + var(--i) * 140ms);
+    }
+    .js .log__sum {
+      animation: log-in 0.5s var(--ease-out-soft) both;
+      animation-delay: 1300ms;
+    }
+  }
+  @keyframes log-in {
+    from {
+      opacity: 0;
+      transform: translateX(-8px);
+    }
+  }
+</style>

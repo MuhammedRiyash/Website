@@ -1,0 +1,124 @@
+---
+import Eyebrow from './Eyebrow.astro';
+import { href } from '../lib/url';
+import type { Crumb } from '../layouts/Base.astro';
+
+interface Props {
+  label: string;
+  aside?: string;
+  title: string;
+  /** Optional second half of a two-tone title, rendered muted. */
+  titleMuted?: string;
+  lead?: string;
+  crumbs?: Crumb[];
+}
+const { label, aside, title, titleMuted, lead, crumbs = [] } = Astro.props;
+---
+
+<section class="ph">
+  <div class="wrap">
+    {
+      crumbs.length > 0 && (
+        <nav class="ph__crumbs" aria-label="Breadcrumb">
+          <ol>
+            <li>
+              <a href={href()}>Home</a>
+            </li>
+            {crumbs.map((c, i) => (
+              <li>
+                {i === crumbs.length - 1 ? <span aria-current="page">{c.name}</span> : <a href={href(c.path)}>{c.name}</a>}
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )
+    }
+    <div class="ph__grid">
+      <div class="ph__main">
+        <Eyebrow label={label} aside={aside} />
+        <h1 class="t-h1">
+          {title}{titleMuted && ' '}
+          {titleMuted && <span class="ph__muted">{titleMuted}</span>}
+        </h1>
+        {lead && <p class="t-lead ph__lead">{lead}</p>}
+        {Astro.slots.has('actions') && <div class="ph__actions"><slot name="actions" /></div>}
+      </div>
+      {Astro.slots.has('aside') && <div class="ph__aside"><slot name="aside" /></div>}
+    </div>
+  </div>
+</section>
+
+<style>
+  .ph {
+    padding-block: clamp(40px, 6vw, 88px) clamp(48px, 7vw, 96px);
+    border-bottom: 1px solid var(--color-line);
+  }
+  .ph__crumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    list-style: none;
+    margin: 0 0 clamp(28px, 4vw, 48px);
+    padding: 0;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    color: var(--color-muted);
+  }
+  .ph__crumbs li + li::before {
+    content: '/';
+    margin-right: 0.25rem;
+    color: var(--color-line-strong);
+  }
+  .ph__crumbs a {
+    color: var(--color-muted);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+  }
+  .ph__crumbs a:hover {
+    color: var(--color-ink);
+    text-decoration: underline;
+  }
+  .ph__crumbs [aria-current] {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    color: var(--color-ink);
+  }
+  .ph__grid {
+    display: grid;
+    gap: 3rem;
+  }
+  @media (min-width: 1024px) {
+    .ph__grid:has(.ph__aside) {
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      align-items: center;
+      gap: 4rem;
+    }
+  }
+  .ph__main {
+    display: grid;
+    gap: 1.5rem;
+    justify-items: start;
+  }
+  .ph__main h1 {
+    max-width: 20ch;
+  }
+  .ph__lead {
+    max-width: 60ch;
+  }
+  .ph__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+  .ph__aside {
+    min-width: 0;
+  }
+  .ph__muted {
+    color: var(--color-muted);
+  }
+</style>

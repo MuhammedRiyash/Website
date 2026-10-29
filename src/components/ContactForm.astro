@@ -1,0 +1,246 @@
+---
+/**
+ * Project enquiry form. Plain HTML POST to Formspree (works without JS); with JS it submits via
+ * fetch and shows an inline success/error message instead of leaving the page.
+ */
+import Button from './Button.astro';
+import { formEndpoint, person } from '../data/site';
+import { services } from '../data/services';
+
+interface Props {
+  id?: string;
+  source: string;
+  preselect?: string;
+}
+const { id = 'contact-form', source, preselect } = Astro.props;
+const projectTypes = [...services.map((s) => s.name), 'New website (not sure which stack)', 'Something else'];
+---
+
+<form class="cf" id={id} action={formEndpoint} method="POST" data-contact-form>
+  <input type="hidden" name="_subject" value="New project enquiry — website" />
+  <input type="hidden" name="source" value={source} />
+
+  <div class="cf__grid">
+    <div class="cf__field">
+      <label for={`${id}-name`}>Name <span aria-hidden="true">*</span></label>
+      <input id={`${id}-name`} name="name" type="text" autocomplete="name" required maxlength="120" />
+    </div>
+    <div class="cf__field">
+      <label for={`${id}-email`}>Email <span aria-hidden="true">*</span></label>
+      <input id={`${id}-email`} name="email" type="email" autocomplete="email" required maxlength="200" />
+    </div>
+    <div class="cf__field">
+      <label for={`${id}-company`}>Company <span class="cf__opt">(optional)</span></label>
+      <input id={`${id}-company`} name="company" type="text" autocomplete="organization" maxlength="160" />
+    </div>
+    <div class="cf__field">
+      <label for={`${id}-type`}>Project type</label>
+      <div class="cf__select">
+        <select id={`${id}-type`} name="project_type">
+          <option value="" selected={!preselect}>Choose one</option>
+          {projectTypes.map((t) => <option value={t} selected={t === preselect}>{t}</option>)}
+        </select>
+      </div>
+    </div>
+    <div class="cf__field cf__field--full">
+      <label for={`${id}-budget`}>Budget</label>
+      <div class="cf__select">
+        <select id={`${id}-budget`} name="budget">
+          <option value="Prefer to discuss" selected>Prefer to discuss</option>
+          <option value="I have a fixed budget (details in message)">I have a fixed budget — details in my message</option>
+          <option value="Not sure yet — need help scoping">Not sure yet — I need help scoping</option>
+        </select>
+      </div>
+    </div>
+    <div class="cf__field cf__field--full">
+      <label for={`${id}-message`}>What do you need? <span aria-hidden="true">*</span></label>
+      <textarea
+        id={`${id}-message`}
+        name="message"
+        rows="6"
+        required
+        minlength="10"
+        maxlength="5000"
+        aria-describedby={`${id}-message-hint`}></textarea>
+      <p class="cf__hint" id={`${id}-message-hint`}>
+        A few lines is enough: what the site does today, what should change, and any deadline.
+      </p>
+    </div>
+    <div class="cf__hp" aria-hidden="true">
+      <label for={`${id}-gotcha`}>Leave this field empty</label>
+      <input id={`${id}-gotcha`} type="text" name="_gotcha" tabindex="-1" autocomplete="off" />
+    </div>
+  </div>
+
+  <div class="cf__actions">
+    <Button type="submit" size="lg" data-submit>Send enquiry</Button>
+    <p class="cf__fine">
+      Fields marked * are required. Prefer email? <a class="link" href={`mailto:${person.email}`}>{person.email}</a>
+    </p>
+  </div>
+  <div class="cf__status" role="status" aria-live="polite" data-status hidden></div>
+</form>
+
+<style>
+  .cf {
+    display: grid;
+    gap: 1.75rem;
+  }
+  .cf__grid {
+    display: grid;
+    gap: 1.25rem;
+  }
+  @media (min-width: 640px) {
+    .cf__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .cf__field--full {
+      grid-column: 1 / -1;
+    }
+  }
+  .cf__field {
+    display: grid;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+  .cf label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-ink-soft);
+  }
+  .cf label span[aria-hidden] {
+    color: var(--color-accent-hover);
+  }
+  .cf__opt {
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--color-muted);
+  }
+  .cf input,
+  .cf select,
+  .cf textarea {
+    width: 100%;
+    min-height: 52px;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-line-strong);
+    border-radius: 10px;
+    background: var(--color-surface);
+    color: var(--color-ink);
+    font: inherit;
+    font-size: 1rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .cf textarea {
+    resize: vertical;
+    min-height: 152px;
+  }
+  .cf input:hover,
+  .cf select:hover,
+  .cf textarea:hover {
+    border-color: color-mix(in srgb, var(--color-ink) 40%, transparent);
+  }
+  .cf input:focus-visible,
+  .cf select:focus-visible,
+  .cf textarea:focus-visible {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 25%, transparent);
+  }
+  .cf input:user-invalid,
+  .cf textarea:user-invalid {
+    border-color: var(--color-invalid);
+  }
+  .cf__select {
+    position: relative;
+  }
+  .cf__select::after {
+    content: '';
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    border-right: 1.5px solid var(--color-ink);
+    border-bottom: 1.5px solid var(--color-ink);
+    transform: translateY(-70%) rotate(45deg);
+    pointer-events: none;
+  }
+  .cf select {
+    appearance: none;
+    padding-right: 2.5rem;
+    cursor: pointer;
+  }
+  .cf__hint {
+    font-size: 0.875rem;
+    color: var(--color-muted);
+  }
+  .cf__hp {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .cf__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+  }
+  .cf__fine {
+    font-size: 0.875rem;
+    color: var(--color-muted);
+    overflow-wrap: anywhere;
+  }
+  .cf__status {
+    padding: 1rem 1.25rem;
+    border-radius: 10px;
+    font-size: 0.9375rem;
+  }
+  .cf__status[data-state='success'] {
+    background: var(--color-accent-tint);
+    color: var(--color-ok-fg);
+  }
+  .cf__status[data-state='error'] {
+    background: var(--color-err-bg);
+    color: var(--color-err-fg);
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>('[data-contact-form]').forEach((form) => {
+    const status = form.querySelector<HTMLElement>('[data-status]');
+    const submit = form.querySelector<HTMLButtonElement>('[data-submit]');
+    const label = submit?.querySelector<HTMLElement>('.btn__label');
+    const show = (state: 'success' | 'error', message: string) => {
+      if (!status) return;
+      status.hidden = false;
+      status.dataset.state = state;
+      status.textContent = message;
+    };
+
+    form.addEventListener('submit', async (event) => {
+      if (!form.checkValidity()) return; // let the browser show its messages
+      event.preventDefault();
+      if (submit) submit.disabled = true;
+      if (label) label.textContent = 'Sending…';
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { Accept: 'application/json' },
+        });
+        if (!response.ok) throw new Error(String(response.status));
+        form.reset();
+        show('success', 'Thanks — your message is on its way. I reply within one working day.');
+      } catch {
+        show('error', 'Something went wrong sending the form. Please email thisismd.riyash@gmail.com or message me on WhatsApp instead.');
+      } finally {
+        if (submit) submit.disabled = false;
+        if (label) label.textContent = 'Send enquiry';
+      }
+    });
+  });
+</script>

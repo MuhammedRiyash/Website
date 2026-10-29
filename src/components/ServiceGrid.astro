@@ -1,0 +1,161 @@
+---
+import Icon from './Icon.astro';
+import { services } from '../data/services';
+import { href } from '../lib/url';
+
+interface Props {
+  headingLevel?: 'h2' | 'h3';
+}
+const { headingLevel: H = 'h3' } = Astro.props;
+---
+
+<ul class="sg" role="list">
+  {
+    services.map((s, i) => (
+      <li data-reveal style={`--d:${i % 4}`}>
+        <a href={href(`services/${s.slug}`)} class="sg__card">
+          <span class="sg__top">
+            <span class="mono sg__num">{String(i + 1).padStart(2, '0')}</span>
+            <span class="sg__arrow">
+              <Icon name="arrow-up-right" size={18} />
+            </span>
+          </span>
+          <H class="sg__name">{s.name}</H>
+          <p class="sg__text">{s.short}</p>
+          <span class="sg__tags mono">{s.tags.join(' · ')}</span>
+        </a>
+      </li>
+    ))
+  }
+  <li data-reveal style="--d:3">
+    <a href={href('contact')} class="sg__card sg__card--cta">
+      <span class="sg__top">
+        <span class="mono sg__num">+</span>
+        <span class="sg__arrow">
+          <Icon name="arrow-up-right" size={18} />
+        </span>
+      </span>
+      <H class="sg__name">Not sure which one you need?</H>
+      <p class="sg__text">Describe the problem instead. I’ll tell you where I’d start — or who would be a better fit.</p>
+      <span class="sg__tags mono">Start a project</span>
+    </a>
+  </li>
+</ul>
+
+<style>
+  .sg {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1px;
+    grid-template-columns: 1fr;
+    background: var(--color-line);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+  }
+  @media (min-width: 640px) {
+    .sg {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1200px) {
+    .sg {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  .sg li {
+    display: flex;
+  }
+  .sg__card {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    min-height: 100%;
+    padding: clamp(24px, 2.4vw, 32px);
+    background: var(--color-surface);
+    color: var(--color-ink);
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+  }
+  .sg__card:hover {
+    background: var(--color-paper);
+  }
+  .sg__card:focus-visible {
+    outline-offset: -4px;
+  }
+  .sg__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+  .sg__num {
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+  }
+  .sg__arrow {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid var(--color-line);
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+  .sg__arrow :global(svg) {
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .sg__card:hover .sg__arrow {
+    background: var(--color-ink);
+    border-color: var(--color-ink);
+    color: var(--color-paper);
+  }
+  .sg__card:hover .sg__arrow :global(svg) {
+    transform: translate(2px, -2px);
+  }
+  .sg__name {
+    font-size: 1.3125rem;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+  }
+  .sg__text {
+    color: var(--color-muted);
+    font-size: 0.9375rem;
+  }
+  .sg__tags {
+    margin-top: auto;
+    padding-top: 1rem;
+    font-size: 0.6875rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-accent-hover);
+  }
+  .sg__card--cta {
+    background: var(--color-cta-card);
+    color: var(--color-on-night);
+  }
+  .sg__card--cta:hover {
+    background: color-mix(in srgb, var(--color-cta-card) 88%, #ffffff);
+  }
+  .sg__card--cta .sg__name {
+    color: var(--color-on-night);
+  }
+  .sg__card--cta .sg__text,
+  .sg__card--cta .sg__num {
+    color: var(--color-night-muted);
+  }
+  .sg__card--cta .sg__tags {
+    color: #3fd0a6;
+  }
+  .sg__card--cta .sg__arrow {
+    border-color: var(--color-night-line);
+  }
+  .sg__card--cta:hover .sg__arrow {
+    background: var(--color-on-night);
+    color: var(--color-night-ink);
+  }
+</style>

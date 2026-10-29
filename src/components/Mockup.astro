@@ -1,0 +1,1093 @@
+---
+/**
+ * High-fidelity desktop renders for private / internal work (no public URL to screenshot).
+ * Content-filled with realistic sample data; always shown with the caption "Illustrative · sample data".
+ * Sized in em against the frame width (container query units), so they stay crisp at any size.
+ */
+import type { RenderVariant } from '../data/visuals';
+
+interface Props {
+  variant: RenderVariant;
+}
+const { variant } = Astro.props;
+
+const gstRows = [
+  ['ZS/26-27/00412', '29AAKCG4821M1Z3', '1008', '18,400.00', '5%', '460.00', '460.00'],
+  ['ZS/26-27/00413', '33AAFCS7724Q1ZK', '1006', '9,250.00', '5%', '231.25', '231.25'],
+  ['ZS/26-27/00415', '29AABCV3390D1Z8', '1515', '12,780.00', '5%', '319.50', '319.50'],
+  ['ZS/26-27/00418', '27AAGCM6612H1ZP', '1904', '6,120.00', '18%', '1,101.60', '—'],
+  ['ZS/26-27/00421', '29AAICT9081B1Z2', '1008', '22,640.00', '5%', '566.00', '566.00'],
+];
+const boxes = [
+  ['#YO-48213', 'Kawaii Mystery Box', '₹599', 'Fulfilled', 'Sanrio gel pen ×2 · washi tape · sticky notes'],
+  ['#YO-48210', 'Korean Journal Box', '₹899', 'Fulfilled', 'A5 journal · sticker sheet ×3 · pouch'],
+  ['#YO-48207', 'Mini Surprise Box', '₹349', 'Awaiting payment', '—'],
+  ['#YO-48202', 'Kawaii Mystery Box', '₹599', 'Fulfilled', 'Highlighter set · memo pad · keychain'],
+  ['#YO-48198', 'Pen Lover Box', '₹499', 'Fulfilled', 'Gel pens ×5 · pencil case'],
+];
+const net = [
+  ['document', 'youngonion.in', '38 KB', 'HIT', false],
+  ['stylesheet', 'elementor-icons.min.css', '27 KB', '', true],
+  ['stylesheet', 'wc-blocks-vendors-style.css', '19 KB', '', true],
+  ['script', 'slick.min.js', '42 KB', '', true],
+  ['stylesheet', 'theme-main.min.css', '64 KB', '', false],
+  ['script', 'swiper-bundle.min.js', '38 KB', '', true],
+  ['fetch', 'graph.facebook.com/…/events', '0.6 s', '', true],
+  ['script', 'storefront.min.js', '22 KB', '', false],
+];
+const products = [
+  ['Oversized Tee', 'Sand', '₹899', '#c9b48f', 'tee'],
+  ['Heavyweight Hoodie', 'Olive', '₹1,999', '#6b7454', 'hoodie'],
+  ['Linen Maxi Dress', 'Rust', '₹1,699', '#b4583a', 'dress'],
+  ['Relaxed Tee', 'Ink', '₹799', '#262a33', 'tee'],
+];
+const pos = [
+  ['PO-2026-0148', 'Sharma Traders', '₹1,24,500', 'Approved'],
+  ['PO-2026-0147', 'Kaveri Packaging', '₹38,200', 'Received'],
+  ['PO-2026-0145', 'Deccan Steel Works', '₹2,06,900', 'Billed'],
+];
+const tests = [
+  ['home and catalogue render', '412ms'],
+  ['product → cart → checkout', '2.1s'],
+  ['coupon and shipping change GST', '864ms'],
+  ['sign-in with OTP and account pages', '1.3s'],
+  ['forms validate and submit', '598ms'],
+  ['no axe-core violations on key pages', '1.7s'],
+];
+---
+
+<div class:list={['mk', `mk--${variant}`]}>
+  {
+    variant === 'zetstore-admin' && (
+      <div class="adm">
+        <aside class="adm__side">
+          <b class="adm__logo">ZetStore</b>
+          {['Dashboard', 'Orders', 'Purchase orders', 'Stock transfers', 'Warehouses', 'Reports'].map((l) => (
+            <span class:list={['adm__nav', { 'is-on': l === 'Reports' }]}>{l}</span>
+          ))}
+          <span class="adm__sub is-on">GSTR-1</span>
+          <span class="adm__sub">Stock ledger</span>
+        </aside>
+        <div class="adm__main">
+          <div class="adm__head">
+            <div>
+              <small>Reports / GST</small>
+              <b>GSTR-1 · October 2026</b>
+            </div>
+            <span class="btn-s btn-s--accent">⤓ Export CSV</span>
+          </div>
+          <div class="tabs">
+            <span class="is-on">B2B</span>
+            <span>B2CS</span>
+            <span>HSN summary</span>
+            <span>Credit notes</span>
+            <span class="tabs__meta">All stores ▾</span>
+          </div>
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>Invoice</th>
+                <th>GSTIN</th>
+                <th>HSN</th>
+                <th class="r">Taxable ₹</th>
+                <th class="r">Rate</th>
+                <th class="r">CGST ₹</th>
+                <th class="r">SGST ₹</th>
+              </tr>
+            </thead>
+            <tbody>
+              {gstRows.map((r) => (
+                <tr>
+                  <td class="mono">{r[0]}</td>
+                  <td class="mono">{r[1]}</td>
+                  <td>{r[2]}</td>
+                  <td class="r">{r[3]}</td>
+                  <td class="r">{r[4]}</td>
+                  <td class="r">{r[5]}</td>
+                  <td class="r">{r[6]}</td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="3">5 invoices · coupon &amp; shipping adjusted</td>
+                <td class="r">69,190.00</td>
+                <td />
+                <td class="r">2,678.35</td>
+                <td class="r">1,576.75</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    )
+  }
+
+  {
+    variant === 'mystery-admin' && (
+      <div class="wp">
+        <aside class="wp__side">
+          <b>Young Onion</b>
+          {['Dashboard', 'Orders', 'Mystery Boxes', 'Products', 'Analytics', 'Marketing'].map((l) => (
+            <span class:list={{ 'is-on': l === 'Mystery Boxes' }}>{l}</span>
+          ))}
+        </aside>
+        <div class="wp__main">
+          <div class="wp__title">
+            <b>Mystery Boxes — fulfilment</b>
+            <span class="btn-s">Run fulfilment (WP-CLI)</span>
+          </div>
+          <p class="wp__filters">
+            All (128) | <b>Fulfilled (109)</b> | Awaiting payment (17) | Needs stock (2)
+          </p>
+          <table class="tbl tbl--wp">
+            <thead>
+              <tr>
+                <th>Order</th>
+                <th>Box</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Items picked automatically</th>
+              </tr>
+            </thead>
+            <tbody>
+              {boxes.map((b) => (
+                <tr>
+                  <td class="link-blue">{b[0]}</td>
+                  <td>{b[1]}</td>
+                  <td>{b[2]}</td>
+                  <td>
+                    <span class:list={['st', b[3] === 'Fulfilled' ? 'st--ok' : 'st--wait']}>{b[3]}</span>
+                  </td>
+                  <td class="muted-s">{b[4]}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p class="wp__note">✓ Order #YO-48213 paid — box filled automatically on payment</p>
+        </div>
+      </div>
+    )
+  }
+
+  {
+    variant === 'tests' && (
+      <div class="term">
+        <p class="term__cmd">
+          <span class="g">$</span> npx playwright test --project=mobile,desktop
+        </p>
+        <p class="term__dim">Running 24 tests using 4 workers</p>
+        {tests.map(([t, ms]) => (
+          <p>
+            <span class="g">✓</span> checkout.spec.ts › {t} <span class="term__dim">({ms})</span>
+          </p>
+        ))}
+        <p class="term__dim">…18 more</p>
+        <p class="term__sum">
+          <span class="pass">24 passed</span> <span class="term__dim">(41.2s)</span>
+        </p>
+        <p>
+          <span class="g">$</span> npx vitest run <span class="term__dim">— 63 passed · tax, stock and pricing maths</span>
+        </p>
+      </div>
+    )
+  }
+
+  {
+    variant === 'woo-perf' && (
+      <div class="perf">
+        <div class="perf__head">
+          <b>Network · product page</b>
+          <span class="tabs tabs--pill">
+            <span>Before</span>
+            <span class="is-on">After</span>
+          </span>
+          <span class="chip-s chip-s--accent">cf-cache-status: HIT</span>
+        </div>
+        <table class="tbl tbl--net">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Name</th>
+              <th class="r">Size / time</th>
+              <th>Waterfall</th>
+            </tr>
+          </thead>
+          <tbody>
+            {net.map(([type, name, size, , cut], i) => (
+              <tr class:list={{ cut }}>
+                <td class="muted-s">{type}</td>
+                <td class="mono">{name}</td>
+                <td class="r">{size}</td>
+                <td>
+                  <span class="wf" style={`--x:${(i * 9) % 46}%;--w:${14 + ((i * 11) % 28)}%`} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div class="perf__sum">
+          <span>
+            <b>−251 KB</b> 19 unused CSS/JS files removed per page
+          </span>
+          <span>
+            <b>~0.6 s</b> of Meta API calls off each page load
+          </span>
+        </div>
+      </div>
+    )
+  }
+
+  {
+    variant === 'shopify-cro' && (
+      <div class="pdp">
+        <div class="pdp__gallery">
+          <div class="pdp__img">
+            <svg viewBox="0 0 120 120" aria-hidden="true">
+              <ellipse cx="60" cy="100" rx="38" ry="6" fill="#d9c7b2" />
+              <path d="M30 40h52v44a14 14 0 0 1-14 14H44a14 14 0 0 1-14-14Z" fill="#c26b47" />
+              <path d="M82 50h8a10 10 0 0 1 0 20h-8" fill="none" stroke="#c26b47" stroke-width="6" />
+              <path d="M30 40h52" stroke="#a9563a" stroke-width="3" />
+            </svg>
+          </div>
+          <div class="pdp__thumbs">
+            <span />
+            <span />
+            <span />
+          </div>
+        </div>
+        <div class="pdp__info">
+          <small>Hand-thrown ceramics</small>
+          <b class="pdp__title">Terracotta Pour-Over Mug</b>
+          <p class="pdp__price">
+            ₹1,250 <s>₹1,490</s>
+          </p>
+          <div class="pills">
+            <span class="is-on">350 ml</span>
+            <span>450 ml</span>
+          </div>
+          <div class="bundle">
+            <b>Bundle &amp; save 10%</b>
+            <p>Mug + Bamboo Coaster Set</p>
+            <p class="bundle__row">
+              <span>₹1,575</span> <s>₹1,750</s> <span class="btn-s btn-s--ink">Add both</span>
+            </p>
+          </div>
+          <div class="upsell">
+            <span class="upsell__img" />
+            <span>
+              Pour-over filter cone <b>₹690</b>
+            </span>
+            <span class="btn-s">+ Add</span>
+          </div>
+        </div>
+        <div class="atc">
+          <span>
+            <b>Terracotta Pour-Over Mug</b> · 350 ml · ₹1,250
+          </span>
+          <span class="btn-s btn-s--accent">Add to cart</span>
+        </div>
+      </div>
+    )
+  }
+
+  {
+    variant === 'fiomis-store' && (
+      <div class="fio">
+        <div class="fio__nav">
+          <b>FIOMIS</b>
+          <span>Men</span>
+          <span>Women</span>
+          <span>New in</span>
+          <span>Sale</span>
+          <span class="fio__cart">Bag (2)</span>
+        </div>
+        <div class="fio__hero">
+          <div>
+            <small>Autumn drop · made in India</small>
+            <b>Choose Better.</b>
+            <p>Heavyweight cotton, honest prices, GST included.</p>
+            <span class="btn-s btn-s--light">Shop the drop</span>
+          </div>
+        </div>
+        <div class="fio__grid">
+          {products.map(([name, colour, price, fill, kind]) => (
+            <div class="fio__card">
+              <div class="fio__img">
+                <svg viewBox="0 0 100 100" aria-hidden="true">
+                  {kind === 'tee' && <path d="M30 22 42 16h16l12 6 14 14-10 10-6-5v45H32V41l-6 5-10-10Z" fill={fill} />}
+                  {kind === 'hoodie' && <path d="M32 24c4-8 32-8 36 0l14 12-8 12-6-5v43H32V43l-6 5-8-12Zm8 0c2 10 18 10 20 0" fill={fill} />}
+                  {kind === 'dress' && <path d="M40 14h20l-2 18 16 54H26l16-54Z" fill={fill} />}
+                </svg>
+              </div>
+              <b>{name}</b>
+              <span class="muted-s">{colour}</span>
+              <span class="fio__price">{price}</span>
+              <span class="sizes">
+                <i>S</i>
+                <i class="is-on">M</i>
+                <i>L</i>
+                <i>XL</i>
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  {
+    variant === 'inventra' && (
+      <div class="inv">
+        <aside class="inv__side">
+          <b>Inventra</b>
+          {['Overview', 'Vendors', 'Purchase orders', 'Warehouses', 'Billing', 'Reports'].map((l) => (
+            <span class:list={{ 'is-on': l === 'Overview' }}>{l}</span>
+          ))}
+        </aside>
+        <div class="inv__main">
+          <div class="kpis">
+            {[
+              ['Inventory turnover', '6.4×', '+0.3'],
+              ['Days of inventory', '57', '−4'],
+              ['Fill rate', '96.2%', '+1.1'],
+              ['EOQ · SKU 1182', '420 u', ''],
+            ].map(([l, v, d]) => (
+              <div class="kpi">
+                <small>{l}</small>
+                <b>{v}</b>
+                {d && <span class="kpi__d">{d}</span>}
+              </div>
+            ))}
+          </div>
+          <div class="chart">
+            <small>Stock value vs. demand · last 12 weeks</small>
+            <svg viewBox="0 0 300 90" preserveAspectRatio="none" aria-hidden="true">
+              {[18, 26, 22, 30, 28, 36, 33, 40, 38, 44, 41, 48].map((h, i) => (
+                <rect x={i * 25 + 4} y={90 - h} width="14" height={h} rx="2" fill="#cfe8df" />
+              ))}
+              <polyline points="11,62 36,58 61,60 86,50 111,52 136,42 161,45 186,36 211,38 236,30 261,33 286,24" fill="none" stroke="#0f8a6a" stroke-width="2.5" vector-effect="non-scaling-stroke" />
+            </svg>
+          </div>
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>PO</th>
+                <th>Vendor</th>
+                <th class="r">Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pos.map((p) => (
+                <tr>
+                  <td class="mono">{p[0]}</td>
+                  <td>{p[1]}</td>
+                  <td class="r">{p[2]}</td>
+                  <td>
+                    <span class="st st--ok">{p[3]}</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    )
+  }
+
+  {
+    variant === 'ai-saas' && (
+      <div class="ai">
+        <div class="ai__post">
+          <small>Source · blog post</small>
+          <b>How we halved checkout time on a Shopify store</b>
+          <p>
+            Most of the delay wasn’t the payment gateway. It was three apps injecting scripts on the cart page, a currency widget
+            re-rendering prices, and a product feed loading on every route…
+          </p>
+          <p class="muted-s">1,840 words · 8 min read</p>
+          <span class="btn-s btn-s--accent">✦ Repurpose</span>
+        </div>
+        <div class="ai__out">
+          <small>X thread · 6 posts</small>
+          <div class="tweet">
+            <b>1/6</b> We halved checkout time on a Shopify store. The payment gateway wasn’t the problem. Here’s what was 🧵
+          </div>
+          <div class="tweet">
+            <b>2/6</b> Three apps were injecting scripts on the cart page. Two did the same job.
+          </div>
+          <small>LinkedIn carousel · slide 1 of 7</small>
+          <div class="slide">
+            <b>5 checkout fixes that actually move conversion</b>
+            <span>Swipe →</span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .mk {
+    position: absolute;
+    inset: 0;
+    font-size: calc(100cqi / 62);
+    font-family: var(--font-sans);
+    color: #0e1014;
+    background: #fff;
+    line-height: 1.35;
+    overflow: hidden;
+  }
+  .mk b {
+    font-weight: 600;
+  }
+  .mk small {
+    display: block;
+    font-size: 0.9em;
+    color: #5b6270;
+  }
+  .mono {
+    font-family: var(--font-mono);
+  }
+  .r {
+    text-align: right;
+  }
+  .muted-s {
+    color: #5b6270;
+  }
+  .btn-s {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    padding: 0.45em 0.9em;
+    border: 1px solid rgb(14 16 20 / 0.16);
+    border-radius: 0.55em;
+    font-size: 1em;
+    font-weight: 500;
+    white-space: nowrap;
+    background: #fff;
+  }
+  .btn-s--accent {
+    background: #0f8a6a;
+    border-color: #0f8a6a;
+    color: #fff;
+  }
+  .btn-s--ink {
+    background: #0e1014;
+    border-color: #0e1014;
+    color: #fff;
+  }
+  .btn-s--light {
+    background: #f7f7f5;
+    border-color: #f7f7f5;
+    color: #0e1014;
+  }
+  .chip-s {
+    padding: 0.3em 0.7em;
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    background: #e7f4ef;
+    color: #0b6e55;
+  }
+  .st {
+    display: inline-block;
+    padding: 0.15em 0.6em;
+    border-radius: 0.4em;
+    font-size: 0.92em;
+    white-space: nowrap;
+  }
+  .st--ok {
+    background: #e7f4ef;
+    color: #0b6e55;
+  }
+  .st--wait {
+    background: #fbf1df;
+    color: #8a5a0f;
+  }
+  .tabs {
+    display: flex;
+    gap: 1.4em;
+    border-bottom: 1px solid rgb(14 16 20 / 0.1);
+    font-size: 1.05em;
+    color: #5b6270;
+  }
+  .tabs span {
+    padding-bottom: 0.6em;
+  }
+  .tabs .is-on {
+    color: #0e1014;
+    font-weight: 600;
+    box-shadow: inset 0 -2px 0 #0f8a6a;
+  }
+  .tabs__meta {
+    margin-left: auto;
+  }
+  .tabs--pill {
+    border: 1px solid rgb(14 16 20 / 0.12);
+    border-radius: 0.6em;
+    padding: 0.2em;
+    gap: 0.2em;
+  }
+  .tabs--pill span {
+    padding: 0.25em 0.8em;
+    border-radius: 0.45em;
+  }
+  .tabs--pill .is-on {
+    background: #0e1014;
+    color: #fff;
+    box-shadow: none;
+  }
+  .tbl {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1em;
+  }
+  .tbl th {
+    text-align: left;
+    font-weight: 500;
+    font-size: 0.92em;
+    color: #5b6270;
+    padding: 0.7em 0.8em;
+    background: #fafaf8;
+    border-bottom: 1px solid rgb(14 16 20 / 0.1);
+    white-space: nowrap;
+  }
+  .tbl td {
+    padding: 0.75em 0.8em;
+    border-bottom: 1px solid rgb(14 16 20 / 0.07);
+    white-space: nowrap;
+  }
+  .tbl tfoot td {
+    font-weight: 600;
+    background: #fafaf8;
+  }
+
+  /* ZetStore admin */
+  .adm,
+  .wp,
+  .inv {
+    display: grid;
+    grid-template-columns: 14em 1fr;
+    height: 100%;
+  }
+  .adm__side,
+  .inv__side {
+    display: grid;
+    align-content: start;
+    gap: 0.35em;
+    padding: 2em 1.2em;
+    background: #0e1014;
+    color: rgb(247 247 245 / 0.7);
+    font-size: 1.1em;
+  }
+  .adm__logo,
+  .inv__side b {
+    color: #fff;
+    font-size: 1.25em;
+    margin-bottom: 0.9em;
+  }
+  .adm__nav,
+  .adm__sub,
+  .inv__side span {
+    padding: 0.45em 0.7em;
+    border-radius: 0.45em;
+  }
+  .adm__sub {
+    margin-left: 1em;
+    font-size: 0.92em;
+  }
+  .adm__nav.is-on,
+  .adm__sub.is-on,
+  .inv__side .is-on {
+    background: rgb(247 247 245 / 0.1);
+    color: #fff;
+  }
+  .adm__main,
+  .inv__main {
+    padding: 2em 2.4em;
+    display: grid;
+    align-content: start;
+    gap: 1.3em;
+    min-width: 0;
+  }
+  .adm__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+  }
+  .adm__head b {
+    font-size: 1.6em;
+    letter-spacing: -0.02em;
+  }
+
+  /* WooCommerce admin */
+  .wp {
+    background: #f0f0f1;
+    grid-template-columns: 13em 1fr;
+  }
+  .wp__side {
+    display: grid;
+    align-content: start;
+    gap: 0.2em;
+    padding: 1.6em 0;
+    background: #1d2327;
+    color: #c3c4c7;
+    font-size: 1.1em;
+  }
+  .wp__side b {
+    color: #fff;
+    padding: 0 1.2em 1em;
+  }
+  .wp__side span {
+    padding: 0.55em 1.2em;
+  }
+  .wp__side .is-on {
+    background: #2271b1;
+    color: #fff;
+  }
+  .wp__main {
+    padding: 1.8em 2.2em;
+    display: grid;
+    align-content: start;
+    gap: 1em;
+    min-width: 0;
+  }
+  .wp__title {
+    display: flex;
+    align-items: center;
+    gap: 1.2em;
+  }
+  .wp__title b {
+    font-size: 1.7em;
+    font-weight: 500;
+  }
+  .wp__title .btn-s {
+    border-color: #2271b1;
+    color: #2271b1;
+    background: #f6f7f7;
+  }
+  .wp__filters {
+    font-size: 1.05em;
+    color: #2271b1;
+  }
+  .wp__filters b {
+    color: #1d2327;
+  }
+  .tbl--wp {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+  }
+  .tbl--wp th {
+    background: #fff;
+  }
+  .link-blue {
+    color: #2271b1;
+    font-weight: 600;
+  }
+  .wp__note {
+    padding: 0.8em 1em;
+    background: #fff;
+    border-left: 0.3em solid #00a32a;
+    font-size: 1.05em;
+  }
+
+  /* Terminal */
+  .mk--tests {
+    background: #0e1014;
+  }
+  .term {
+    padding: 2.2em 2.6em;
+    font-family: var(--font-mono);
+    font-size: 1.2em;
+    color: #d6dae1;
+    display: grid;
+    gap: 0.6em;
+  }
+  .term p {
+    margin: 0;
+    white-space: nowrap;
+  }
+  .term__cmd {
+    color: #fff;
+  }
+  .g {
+    color: #3fd0a6;
+  }
+  .term__dim {
+    color: #8a909c;
+  }
+  .term__sum {
+    padding-top: 0.6em;
+    border-top: 1px solid rgb(247 247 245 / 0.12);
+  }
+  .pass {
+    color: #0e1014;
+    background: #3fd0a6;
+    padding: 0.1em 0.5em;
+    border-radius: 0.3em;
+    font-weight: 600;
+  }
+
+  /* Performance */
+  .perf {
+    padding: 2em 2.4em;
+    display: grid;
+    gap: 1.2em;
+  }
+  .perf__head {
+    display: flex;
+    align-items: center;
+    gap: 1.2em;
+    font-size: 1.15em;
+  }
+  .perf__head .tabs {
+    margin-left: auto;
+    font-size: 0.85em;
+  }
+  .tbl--net td {
+    padding: 0.55em 0.8em;
+  }
+  .tbl--net tr.cut td {
+    color: #8a909c;
+    text-decoration: line-through;
+  }
+  .wf {
+    position: relative;
+    display: block;
+    height: 0.9em;
+  }
+  .wf::after {
+    content: '';
+    position: absolute;
+    left: var(--x);
+    width: var(--w);
+    top: 0;
+    bottom: 0;
+    border-radius: 0.25em;
+    background: #0f8a6a;
+  }
+  tr.cut .wf::after {
+    background: repeating-linear-gradient(135deg, rgb(180 35 24 / 0.35) 0 0.35em, transparent 0.35em 0.7em);
+    outline: 1px dashed rgb(180 35 24 / 0.5);
+  }
+  .perf__sum {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1em;
+  }
+  .perf__sum span {
+    padding: 0.9em 1.1em;
+    border-radius: 0.8em;
+    background: #e7f4ef;
+    color: #2a2e36;
+  }
+  .perf__sum b {
+    display: block;
+    font-size: 1.8em;
+    color: #0b6e55;
+    letter-spacing: -0.03em;
+  }
+
+  /* Shopify product page */
+  .pdp {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.4em;
+    padding: 2.2em 2.6em 7em;
+    height: 100%;
+  }
+  .pdp__gallery {
+    display: grid;
+    gap: 0.8em;
+    align-content: start;
+  }
+  .pdp__img {
+    aspect-ratio: 1;
+    border-radius: 1em;
+    background: #f4ece3;
+    display: grid;
+    place-items: center;
+  }
+  .pdp__img svg {
+    width: 70%;
+  }
+  .pdp__thumbs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.8em;
+  }
+  .pdp__thumbs span {
+    aspect-ratio: 1;
+    border-radius: 0.6em;
+    background: #ede3d8;
+  }
+  .pdp__thumbs span:first-child {
+    outline: 2px solid #0e1014;
+  }
+  .pdp__info {
+    display: grid;
+    align-content: start;
+    gap: 0.9em;
+  }
+  .pdp__title {
+    font-size: 2em;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+  .pdp__price {
+    font-size: 1.5em;
+    font-weight: 600;
+  }
+  .pdp__price s,
+  .bundle s {
+    color: #8a909c;
+    font-weight: 400;
+    font-size: 0.75em;
+  }
+  .pills,
+  .sizes {
+    display: flex;
+    gap: 0.5em;
+  }
+  .pills span {
+    padding: 0.45em 1em;
+    border: 1px solid rgb(14 16 20 / 0.2);
+    border-radius: 999px;
+  }
+  .pills .is-on {
+    background: #0e1014;
+    color: #fff;
+  }
+  .bundle {
+    padding: 1em 1.1em;
+    border: 1.5px solid #0f8a6a;
+    border-radius: 0.9em;
+    background: #e7f4ef;
+    display: grid;
+    gap: 0.3em;
+  }
+  .bundle__row {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    font-weight: 600;
+  }
+  .bundle__row .btn-s {
+    margin-left: auto;
+  }
+  .upsell {
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+    padding: 0.7em;
+    border: 1px solid rgb(14 16 20 / 0.1);
+    border-radius: 0.9em;
+  }
+  .upsell .btn-s {
+    margin-left: auto;
+  }
+  .upsell__img {
+    width: 3.2em;
+    height: 3.2em;
+    border-radius: 0.5em;
+    background: radial-gradient(circle at 50% 40%, #c9a27a 0 35%, #f1e7dc 36%);
+  }
+  .atc {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2em 2.6em;
+    background: #fff;
+    border-top: 1px solid rgb(14 16 20 / 0.1);
+    box-shadow: 0 -1em 2em -1.5em rgb(14 16 20 / 0.25);
+    font-size: 1.1em;
+  }
+
+  /* Fiomis */
+  .mk--fiomis-store {
+    background: #f4f1ec;
+  }
+  .fio {
+    padding: 1.8em 2.6em;
+    display: grid;
+    gap: 1.6em;
+  }
+  .fio__nav {
+    display: flex;
+    align-items: center;
+    gap: 1.8em;
+    font-size: 1.1em;
+  }
+  .fio__nav b {
+    letter-spacing: 0.32em;
+    margin-right: 1em;
+  }
+  .fio__cart {
+    margin-left: auto;
+    font-weight: 600;
+  }
+  .fio__hero {
+    position: relative;
+    height: 15em;
+    padding: 2.2em;
+    border-radius: 1.2em;
+    overflow: hidden;
+    color: #f7f7f5;
+    background:
+      radial-gradient(circle at 85% 30%, rgb(15 138 106 / 0.75), transparent 45%),
+      radial-gradient(circle at 70% 90%, rgb(201 162 122 / 0.6), transparent 40%),
+      #1b1d22;
+  }
+  .fio__hero small {
+    color: #b7f0dd;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-family: var(--font-mono);
+  }
+  .fio__hero b {
+    display: block;
+    font-size: 3.6em;
+    letter-spacing: -0.05em;
+    margin: 0.15em 0;
+  }
+  .fio__hero p {
+    margin-bottom: 1em;
+    color: #d6dae1;
+  }
+  .fio__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.2em;
+  }
+  .fio__card {
+    display: grid;
+    gap: 0.2em;
+    font-size: 1.05em;
+  }
+  .fio__img {
+    aspect-ratio: 1;
+    border-radius: 0.8em;
+    background: #e8e2d8;
+    display: grid;
+    place-items: center;
+    margin-bottom: 0.4em;
+  }
+  .fio__img svg {
+    width: 76%;
+  }
+  .fio__price {
+    font-weight: 600;
+  }
+  .sizes i {
+    font-style: normal;
+    font-size: 0.85em;
+    padding: 0.15em 0.45em;
+    border: 1px solid rgb(14 16 20 / 0.2);
+    border-radius: 0.3em;
+  }
+  .sizes .is-on {
+    background: #0e1014;
+    color: #fff;
+  }
+
+  /* Inventra */
+  .inv__main {
+    gap: 1.1em;
+  }
+  .kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.9em;
+  }
+  .kpi {
+    position: relative;
+    padding: 0.9em 1em;
+    border: 1px solid rgb(14 16 20 / 0.1);
+    border-radius: 0.8em;
+  }
+  .kpi b {
+    font-size: 1.9em;
+    letter-spacing: -0.03em;
+  }
+  .kpi__d {
+    position: absolute;
+    right: 0.8em;
+    top: 0.8em;
+    font-size: 0.9em;
+    color: #0b6e55;
+  }
+  .chart {
+    padding: 0.9em 1em;
+    border: 1px solid rgb(14 16 20 / 0.1);
+    border-radius: 0.8em;
+  }
+  .chart svg {
+    display: block;
+    width: 100%;
+    height: 8em;
+    margin-top: 0.5em;
+  }
+
+  /* AI SaaS */
+  .ai {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    height: 100%;
+  }
+  .ai__post {
+    padding: 2.2em;
+    display: grid;
+    align-content: start;
+    gap: 0.9em;
+    border-right: 1px solid rgb(14 16 20 / 0.08);
+  }
+  .ai__post b {
+    font-size: 1.9em;
+    letter-spacing: -0.03em;
+    line-height: 1.12;
+  }
+  .ai__post p {
+    font-size: 1.05em;
+    color: #2a2e36;
+  }
+  .ai__post .btn-s {
+    justify-self: start;
+  }
+  .ai__out {
+    padding: 2em;
+    display: grid;
+    align-content: start;
+    gap: 0.7em;
+    background: #f7f7f5;
+  }
+  .tweet {
+    padding: 0.9em 1em;
+    border: 1px solid rgb(14 16 20 / 0.1);
+    border-radius: 0.8em;
+    background: #fff;
+    font-size: 1.05em;
+  }
+  .slide {
+    display: grid;
+    gap: 1em;
+    padding: 1.6em 1.4em;
+    border-radius: 0.8em;
+    background: #0e1014;
+    color: #fff;
+  }
+  .slide b {
+    font-size: 1.6em;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+  }
+  .slide span {
+    color: #3fd0a6;
+    font-family: var(--font-mono);
+  }
+</style>

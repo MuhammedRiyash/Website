@@ -1,0 +1,15 @@
+---
+/** Section label: mono, tracked, emerald tick, optional muted aside. */
+interface Props {
+  label: string;
+  aside?: string;
+  class?: string;
+  as?: 'p' | 'span';
+}
+const { label, aside, class: className, as: Tag = 'p' } = Astro.props;
+---
+
+<Tag class:list={['eyebrow', className]}>
+  <span>{label}</span>
+  {aside && <span class="aside">/ {aside}</span>}
+</Tag>
