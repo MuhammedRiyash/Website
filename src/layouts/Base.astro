@@ -1,0 +1,243 @@
+---
+import '@fontsource-variable/geist';
+import '@fontsource-variable/geist-mono';
+import '../styles/global.css';
+import geistLatin from '@fontsource-variable/geist/files/geist-latin-wght-normal.woff2?url';
+import { getImage } from 'astro:assets';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import LeadPopup from '../components/LeadPopup.astro';
+import portrait from '../assets/portrait.jpg';
+import { person, site, socials } from '../data/site';
+import { services } from '../data/services';
+import { absolute, asset } from '../lib/url';
+
+export interface Crumb {
+  name: string;
+  path: string;
+}
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Page path without base/extension, e.g. `services/shopify-development`. Empty for home. */
+  path: string;
+  ogType?: 'website' | 'article' | 'profile';
+  breadcrumbs?: Crumb[];
+  /** Extra JSON-LD nodes added to the page graph (FAQPage, CreativeWork…). */
+  schema?: Record<string, unknown>[];
+  noindex?: boolean;
+  footerCta?: boolean;
+  /** Deferred lead-capture pop-up (off on contact and 404). */
+  leadPopup?: boolean;
+}
+
+const {
+  title,
+  description = site.defaultDescription,
+  path,
+  ogType = 'website',
+  breadcrumbs = [],
+  schema = [],
+  noindex = false,
+  footerCta = true,
+  leadPopup = true,
+} = Astro.props;
+
+const fullTitle = title ? `${title} | ${person.shortName}` : site.defaultTitle;
+const canonical = absolute(path);
+const ogImage = absolute(asset('og.png'));
+const portraitImg = await getImage({ src: portrait, width: 600, format: 'jpg' });
+const homeUrl = absolute('');
+
+const graph: Record<string, unknown>[] = [
+  {
+    '@type': 'Person',
+    '@id': `${homeUrl}#person`,
+    name: person.name,
+    alternateName: person.shortName,
+    jobTitle: person.title,
+    email: `mailto:${person.email}`,
+    telephone: person.phone.replace(/\s/g, ''),
+    url: homeUrl,
+    image: absolute(portraitImg.src),
+    address: { '@type': 'PostalAddress', addressLocality: 'Bengaluru', addressRegion: 'Karnataka', addressCountry: 'IN' },
+    knowsLanguage: person.languages.map((l) => l.name),
+    knowsAbout: ['Astro', 'React', 'Next.js', 'TypeScript', 'Laravel', 'WordPress', 'WooCommerce', 'Shopify', 'Playwright', 'Core Web Vitals', 'Technical SEO'],
+    sameAs: [...socials.filter((s) => s.label !== 'WhatsApp').map((s) => s.href), person.portfolio],
+  },
+  {
+    '@type': 'ProfessionalService',
+    '@id': `${homeUrl}#service`,
+    name: site.name,
+    description: site.defaultDescription,
+    url: homeUrl,
+    image: ogImage,
+    logo: absolute(asset('android-chrome-512x512.png')),
+    email: person.email,
+    telephone: person.phone.replace(/\s/g, ''),
+    founder: { '@id': `${homeUrl}#person` },
+    address: { '@type': 'PostalAddress', addressLocality: 'Bengaluru', addressRegion: 'Karnataka', addressCountry: 'IN' },
+    areaServed: [
+      { '@type': 'Country', name: 'India' },
+      { '@type': 'Place', name: 'Remote — worldwide' },
+    ],
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: 'Full-stack web development services',
+      itemListElement: services.map((s) => ({
+        '@type': 'Offer',
+        itemOffered: { '@type': 'Service', name: s.name, url: absolute(`services/${s.slug}`) },
+      })),
+    },
+  },
+  {
+    '@type': 'WebSite',
+    '@id': `${homeUrl}#website`,
+    url: homeUrl,
+    name: site.name,
+    inLanguage: 'en-IN',
+    publisher: { '@id': `${homeUrl}#person` },
+  },
+  {
+    '@type': 'WebPage',
+    '@id': `${canonical}#webpage`,
+    url: canonical,
+    name: fullTitle,
+    description,
+    isPartOf: { '@id': `${homeUrl}#website` },
+    about: { '@id': `${homeUrl}#service` },
+  },
+];
+
+if (breadcrumbs.length) {
+  graph.push({
+    '@type': 'BreadcrumbList',
+    itemListElement: [{ name: 'Home', path: '' }, ...breadcrumbs].map((c, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: c.name,
+      item: absolute(c.path),
+    })),
+  });
+}
+graph.push(...schema);
+
+const jsonLd = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }).replace(/</g, '\\u003c');
+---
+
+<!doctype html>
+<html lang="en-IN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#F7F7F5" />
+    <meta name="color-scheme" content="light" />
+    <script is:inline>
+      // Runs before first paint. Light is the default for everyone; dark only when the visitor chose it
+      // with the toggle (localStorage `theme`). The OS colour-scheme preference is deliberately ignored.
+      (function () {
+        var root = document.documentElement;
+        root.classList.add('js');
+        var saved = null;
+        try {
+          saved = localStorage.getItem('theme');
+        } catch (e) {}
+        var theme = saved === 'dark' ? 'dark' : 'light';
+        if (theme === 'dark') document.querySelector('meta[name="color-scheme"]').setAttribute('content', 'dark');
+        root.dataset.theme = theme;
+        root.style.colorScheme = theme;
+        if (theme === 'dark') document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0E1014');
+      })();
+    </script>
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex ? <meta name="robots" content="noindex, follow" /> : <meta name="robots" content="index, follow, max-image-preview:large" />}
+    <meta name="author" content={person.name} />
+    <meta name="generator" content={Astro.generator} />
+
+    <link rel="preload" href={geistLatin} as="font" type="font/woff2" crossorigin />
+
+    <link rel="icon" href={asset('favicon.ico')} sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href={asset('favicon-32x32.png')} />
+    <link rel="icon" type="image/png" sizes="16x16" href={asset('favicon-16x16.png')} />
+    <link rel="apple-touch-icon" sizes="180x180" href={asset('apple-touch-icon.png')} />
+    <link rel="manifest" href={asset('site.webmanifest')} />
+    <link rel="sitemap" href={asset('sitemap-index.xml')} />
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content={site.locale} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="MD Riyash — full-stack web development: fast, tested websites and online stores." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content={site.twitter} />
+    <meta name="twitter:creator" content={site.twitter} />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <script type="application/ld+json" set:html={jsonLd} />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <Header />
+    <div class="header-spacer" aria-hidden="true"></div>
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer showCta={footerCta} />
+    {leadPopup && <LeadPopup />}
+
+    <script>
+      const targets = document.querySelectorAll<HTMLElement>('[data-reveal]');
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce || !('IntersectionObserver' in window)) {
+        targets.forEach((el) => el.classList.add('is-in'));
+      } else {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              // Reveal on entry, and also anything a fast scroll/anchor jump has already carried above the viewport.
+              if (entry.isIntersecting || entry.boundingClientRect.top < 0) {
+                entry.target.classList.add('is-in');
+                io.unobserve(entry.target);
+              }
+            }
+          },
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
+        );
+        targets.forEach((el) => io.observe(el));
+      }
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  .skip-link {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 100;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    background: var(--color-ink);
+    color: var(--color-paper);
+    font-weight: 500;
+    text-decoration: none;
+    transform: translateY(-160%);
+    transition: transform 0.2s ease;
+  }
+  .skip-link:focus {
+    transform: none;
+  }
+  main:focus {
+    outline: none;
+  }
+</style>
