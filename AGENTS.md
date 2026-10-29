@@ -94,7 +94,7 @@ scripts/og-image.html  source for public/og.png (instructions inside)
   - the form posts straight to Formspree
   - a `<noscript>` style shows the desktop nav on mobile
 - Responsive widths checked: 360, 390, 768, 1024, 1280, 1440, 1920. There must be no horizontal scroll at any of them, and tap targets must be ≥ 44 px.
-- The sticky stacked case cards only stick at ≥ 1024 px wide and ≥ 800 px tall. Smaller screens get a normal list.
+- Case-study cards stack (sticky) at ≥ 1024 px wide and ≥ 640 px tall, with `top: calc(80px + 16px + n × 10px)` capped at 5 steps. Desktop cards are compact (≤ ~490 px tall: 3-line summary, 4 stack chips, device pair ≤ 460 px wide), so the stuck card always fits on laptop screens — re-measure if you add content to cards. As the next card slides over, the covered one scales to 0.94 and its content dims to 0.55, using CSS scroll-driven animations on the next card's view timeline (`view-timeline-name: --case-N` on each `<li>`, `timeline-scope` on the list). It's guarded by `@supports (animation-timeline: view())` and reduced motion. Smaller or shorter screens get a normal list.
 
 ## How to…
 

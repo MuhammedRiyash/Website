@@ -13,18 +13,20 @@ interface Props {
   filter?: boolean;
 }
 const { items, headingLevel = 'h3', filter = true } = Astro.props;
+// Each card exposes a view timeline (--case-N); the list hoists them so card N-1 can animate on card N's.
+const scope = `timeline-scope:${items.map((_, i) => `--case-${i}`).join(',')}`;
 ---
 
 {
   filter ? (
     <div data-filter-root>
       <TechFilter total={items.length} noun="case studies" available={items.flatMap((i) => i.filters)} />
-      <ol class="cases" role="list">
+      <ol class="cases" role="list" style={scope}>
         {items.map((item, i) => <CaseCard item={item} index={i} headingLevel={headingLevel} />)}
       </ol>
     </div>
   ) : (
-    <ol class="cases" role="list">
+    <ol class="cases" role="list" style={scope}>
       {items.map((item, i) => <CaseCard item={item} index={i} headingLevel={headingLevel} />)}
     </ol>
   )
@@ -38,22 +40,16 @@ const { items, headingLevel = 'h3', filter = true } = Astro.props;
     display: grid;
     gap: 24px;
   }
-  @media (min-width: 1024px) and (min-height: 800px) {
+  /* Stack on laptop screens too: compact cards (~540 px) fit under the header at ≥ 640 px tall. */
+  @media (min-width: 1024px) and (min-height: 640px) {
+    .cases {
+      gap: 32px;
+      /* Room after the last card so it settles into its stuck position. */
+      padding-bottom: 12vh;
+    }
     .cases :global(> li) {
       position: sticky;
-      top: calc(80px + 24px);
-    }
-    .cases :global(> li:nth-child(2)) {
-      top: calc(80px + 36px);
-    }
-    .cases :global(> li:nth-child(3)) {
-      top: calc(80px + 48px);
-    }
-    .cases :global(> li:nth-child(4)) {
-      top: calc(80px + 60px);
-    }
-    .cases :global(> li:nth-child(n + 5)) {
-      top: calc(80px + 72px);
+      top: calc(80px + 16px + var(--step, 0) * 10px);
     }
   }
 </style>
